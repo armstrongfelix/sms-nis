@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { useFormik } from "formik";
+import { useAuth } from "../../contexts/AuthContext";
 import Button from "../../components/buttons/Button";
-import { FiShield, FiMail, FiLock, FiArrowLeft } from "react-icons/fi";
+import { FiMail, FiLock, FiArrowLeft, FiAlertCircle } from "react-icons/fi";
 
 function validate(values) {
   const errors = {};
@@ -18,11 +20,30 @@ function validate(values) {
 }
 
 export default function AdminLoginPage() {
+  const { adminLogin } = useAuth();
+  const [authError, setAuthError] = useState(null);
+
   const formik = useFormik({
     initialValues: { email: "", password: "" },
     validate,
-    onSubmit: (values) => {
-      console.log("Admin login:", values);
+    onSubmit: async (values, { setSubmitting }) => {
+      setAuthError(null);
+      try {
+        await adminLogin(values.email, values.password);
+      } catch (err) {
+        const map = {
+          "auth/user-not-found": "No account found with this email",
+          "auth/wrong-password": "Incorrect password",
+          "auth/invalid-credential": "Invalid email or password",
+          "auth/invalid-email": "Enter a valid email address",
+          "auth/too-many-requests": "Too many attempts. Try again later",
+        };
+        setAuthError(
+          map[err.code] || "Login failed. Please try again."
+        );
+      } finally {
+        setSubmitting(false);
+      }
     },
   });
 
@@ -59,6 +80,13 @@ export default function AdminLoginPage() {
         </div>
 
         <form onSubmit={formik.handleSubmit} className="space-y-5">
+          {authError && (
+            <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
+              <FiAlertCircle className="shrink-0" />
+              <span>{authError}</span>
+            </div>
+          )}
+
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor="email"
@@ -124,8 +152,9 @@ export default function AdminLoginPage() {
             variant="secondary"
             size="lg"
             className="w-full"
+            disabled={formik.isSubmitting}
           >
-            Sign In
+            {formik.isSubmitting ? "Signing in..." : "Sign In"}
           </Button>
         </form>
       </div>
