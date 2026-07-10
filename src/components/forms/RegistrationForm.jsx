@@ -1,16 +1,16 @@
 import { useState } from 'react'
 import { useFormik } from 'formik'
 import useLocationStore from '../../stores/locations/locations'
+import useAllStaffStore from '../../stores/shq-store/allStaffStore'
 import Button from '../buttons/Button'
 
 const TITLES = ['Mr', 'Mrs', 'Miss']
 
 const GENDERS = ['Male', 'Female']
 
-const RANKS = ['Assistant Superintendent', 'Deputy Superintendent',
-  'Chief Superintendent', 'Assistant Comptroller', 'Deputy Comptroller',
-  'Comptroller', 'Assistant Comptroller General',
-  'Deputy Comptroller General', 'Comptroller General']
+const RANKS = ['IA3', 'IA2', 'IA1', 'AII', 'II', 'ASI2', 'ASI1', 'DSI', 'SI', 'CSI', 'ACI', 'DCI', 'CIS', 'ACG', 'DCG', 'CG']
+
+const FORMATIONS = ['SHQ', 'ZONEA', 'ZONEB', 'ZONEC', 'ZONED', 'ZONEE', 'ZONEF', 'ZONEG', 'ZONEH', 'ABSC', 'ADSC', 'AKSC', 'ANSC', 'BASC', 'BESC', 'BOSC', 'BYSC', 'CRSC', 'DESC', 'EBSC', 'EDSC', 'EKSC', 'ENSC', 'FCSC', 'GOSC', 'IMSC', 'JISC', 'KDSC', 'KESC', 'KNSC', 'KOSC', 'KTSC', 'KWSC', 'LASC', 'NASC', 'NISC', 'OGSC', 'ONSC', 'OSSC', 'OYSC', 'PLSC', 'RISC', 'SOSC', 'TASC', 'YOSC', 'ZASC', 'NITSOL', 'NITSA', 'ITSK', 'MMIA', 'NAIA', 'NFBC', 'SEBC', 'IDBC', 'RVMC']
 
 function validate(values) {
   const errors = {}
@@ -172,6 +172,7 @@ export default function RegistrationForm() {
   const [submitted, setSubmitted] = useState(null)
   const states = useLocationStore((s) => s.states)
   const getLgas = useLocationStore((s) => s.getLgas)
+  const addStaff = useAllStaffStore((s) => s.addStaff)
 
   const formik = useFormik({
     initialValues: {
@@ -196,6 +197,7 @@ export default function RegistrationForm() {
     },
     validate,
     onSubmit: (values) => {
+      addStaff(values)
       setSubmitted(values)
     },
   })
@@ -253,7 +255,7 @@ export default function RegistrationForm() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Input id="serviceNumber" label="Service Number" formik={formik} placeholder="e.g. NIS/2020/001" required />
           <Select id="rank" label="Rank" formik={formik} options={RANKS} required />
-          <Input id="formation" label="Formation" formik={formik} placeholder="e.g. Lagos Command" required />
+          <Select id="formation" label="Formation" formik={formik} options={FORMATIONS} placeholder="Select formation" required />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
