@@ -47,14 +47,11 @@ export default function AdminLoginPage() {
           <FiArrowLeft /> Back
         </a>
 
-        <div className="text-center space-y-2 mb-8 ">
-          <div className="w-25 h-25 bg-nis-secondary/5 rounded-full flex items-center justify-center mx-auto p-2">
-            <img
-              src="src\assets\images\nis-logo.png"
-              alt="nis-logo"
-              
-            />
-          </div>
+        <div className="w-25 h-25 bg-nis-secondary/5 rounded-full flex items-center justify-center mx-auto p-2 ">
+          <img src="src\assets\images\nis-logo.png" alt="nis-logo" />
+        </div>
+
+        <div className="text-center space-y-2 mb-8  pt-10">
           <h1 className="text-xl font-bold text-nis-primary">Admin Login</h1>
           <p className="text-sm text-gray-500">
             Sign in to manage the staff management system
