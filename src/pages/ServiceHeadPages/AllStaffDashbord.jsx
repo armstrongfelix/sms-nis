@@ -12,6 +12,7 @@ const FIELDS = [
   { id: "serviceNumber", label: "Service Number", type: "text" },
   { id: "rank", label: "Rank", type: "text" },
   { id: "formation", label: "Formation", type: "text" },
+  { id: "zone", label: "Zone", type: "text" },
   { id: "dateOfFirstAppointment", label: "Date of First Appt.", type: "date" },
   { id: "email", label: "Email", type: "email" },
   { id: "phoneNumber", label: "Phone", type: "text" },
@@ -59,7 +60,7 @@ export default function AllStaffDashboard() {
   const filteredStaff = allStaff.filter((s) => {
     if (!search) return true
     const q = search.toLowerCase()
-    const fields = [formatName(s), s.serviceNumber, s.rank, s.formation, s.gender, s.phoneNumber, s.email, s.stateOfOrigin, s.lgaOfOrigin, s.dateOfBirth, s.dateOfFirstAppointment, s.nin, s.bvn, s.nhf, s.permanentAddress]
+    const fields = [formatName(s), s.serviceNumber, s.rank, s.formation, s.zone, s.gender, s.phoneNumber, s.email, s.stateOfOrigin, s.lgaOfOrigin, s.dateOfBirth, s.dateOfFirstAppointment, s.nin, s.bvn, s.nhf, s.permanentAddress]
     return fields.some((v) => v && v.toLowerCase().includes(q))
   })
 
@@ -85,6 +86,7 @@ export default function AllStaffDashboard() {
               <th className="px-4 py-3">Service No</th>
               <th className="px-4 py-3">Rank</th>
               <th className="px-4 py-3">Formation</th>
+              <th className="px-4 py-3">Zone</th>
               <th className="px-4 py-3">Gender</th>
               <th className="px-4 py-3">Phone</th>
               <th className="px-4 py-3">Email</th>
@@ -101,7 +103,7 @@ export default function AllStaffDashboard() {
           <tbody className="divide-y divide-gray-100">
             {filteredStaff.length === 0 ? (
               <tr>
-                <td colSpan={17} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={18} className="px-4 py-8 text-center text-gray-400">
                   {allStaff.length === 0 ? "No staff records found." : "No records match your search."}
                 </td>
               </tr>
@@ -122,6 +124,7 @@ export default function AllStaffDashboard() {
                   <td className="px-4 py-2.5">{s.serviceNumber}</td>
                   <td className="px-4 py-2.5">{s.rank}</td>
                   <td className="px-4 py-2.5">{s.formation}</td>
+                  <td className="px-4 py-2.5">{s.zone}</td>
                   <td className="px-4 py-2.5">{s.gender}</td>
                   <td className="px-4 py-2.5 whitespace-nowrap">{s.phoneNumber}</td>
                   <td className="px-4 py-2.5">{s.email}</td>

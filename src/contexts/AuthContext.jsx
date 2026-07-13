@@ -4,17 +4,25 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { auth } from "../firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "../firebase";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [adminData, setAdminData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
+      if (currentUser) {
+        const snap = await getDoc(doc(db, "admins", currentUser.uid));
+        setAdminData(snap.exists() ? snap.data() : null);
+      } else {
+        setAdminData(null);
+      }
       setLoading(false);
     });
     return unsubscribe;
@@ -29,7 +37,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, adminLogin, logout }}>
+    <AuthContext.Provider value={{ user, adminData, loading, adminLogin, logout }}>
       {!loading && children}
     </AuthContext.Provider>
   );
