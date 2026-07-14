@@ -14,15 +14,17 @@ import React from "react";
 import ZonalStaffDashboard from "./pages/ZonalHeadPages/ZonalStaffDashboard";
 import RegistrationForm from "./components/forms/RegistrationForm";
 import ZonalTest from "./components/ZonalTest";
+import FormationStaffDashboard from "./pages/FormationHeadPage/FormationStaffDashboard";
 
 function App() {
   return (
     <div>
       {/* <AllStaffDashboard /> */}
       {/* <LoadingSpinner/> */}
-      <ZonalStaffDashboard />
+      {/* <ZonalStaffDashboard /> */}
       {/* <RegistrationForm /> */}
       {/* <ZonalTest /> */}
+      {/* <FormationStaffDashboard/> */}
     </div>
   );
 }

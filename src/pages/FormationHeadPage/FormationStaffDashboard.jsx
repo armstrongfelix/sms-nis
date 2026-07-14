@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { FiEdit2, FiX } from "react-icons/fi";
-import useAllStaffStore from "../../stores/shq-store/allStaffStore";
-import LoadingSpinner from "../../components/spiner/LoadingSpinner";
+import { useEffect, useState } from "react"
+import { FiEdit2, FiX } from "react-icons/fi"
+import useFormationStaffStore from "../../stores/formation-store/formationStaffStore"
+import LoadingSpinner from "../../components/spiner/LoadingSpinner"
 
 const FIELDS = [
   { id: "title", label: "Title", type: "text" },
@@ -23,69 +23,51 @@ const FIELDS = [
   { id: "bvn", label: "BVN", type: "text" },
   { id: "nhf", label: "NHF", type: "text" },
   { id: "permanentAddress", label: "Address", type: "text" },
-];
+]
 
-export default function AllStaffDashboard() {
-  const { allStaff, fetchAllStaff, updateStaff, loading } = useAllStaffStore();
-  const [editing, setEditing] = useState(null);
-  const [form, setForm] = useState({});
-  const [search, setSearch] = useState("");
+export default function FormationStaffDashboard() {
+  const { allStaff, fetchAllStaff, updateStaff, loading } = useFormationStaffStore()
+  const [editing, setEditing] = useState(null)
+  const [form, setForm] = useState({})
+  const [search, setSearch] = useState("")
 
   useEffect(() => {
-    fetchAllStaff();
-  }, [fetchAllStaff]);
+    fetchAllStaff()
+  }, [fetchAllStaff])
 
   function openEdit(staff) {
-    setEditing(staff);
-    setForm({ ...staff });
+    setEditing(staff)
+    setForm({ ...staff })
   }
 
   function closeEdit() {
-    setEditing(null);
-    setForm({});
+    setEditing(null)
+    setForm({})
   }
 
   async function handleEditSubmit(e) {
-    e.preventDefault();
-    await updateStaff(editing.id, form);
-    await fetchAllStaff();
-    closeEdit();
+    e.preventDefault()
+    await updateStaff(editing.id, form)
+    await fetchAllStaff()
+    closeEdit()
   }
 
   function setValue(id, value) {
-    setForm((prev) => ({ ...prev, [id]: value }));
+    setForm((prev) => ({ ...prev, [id]: value }))
   }
 
-  const formatName = (s) =>
-    `${s.title} ${s.surname} ${s.firstName}${s.middleName ? ` ${s.middleName}` : ""}`;
+  const formatName = (s) => `${s.title} ${s.surname} ${s.firstName}${s.middleName ? ` ${s.middleName}` : ""}`
 
   const filteredStaff = allStaff.filter((s) => {
-    if (!search) return true;
-    const q = search.toLowerCase();
-    const fields = [
-      formatName(s),
-      s.serviceNumber,
-      s.rank,
-      s.formation,
-      s.zone,
-      s.gender,
-      s.phoneNumber,
-      s.email,
-      s.stateOfOrigin,
-      s.lgaOfOrigin,
-      s.dateOfBirth,
-      s.dateOfFirstAppointment,
-      s.nin,
-      s.bvn,
-      s.nhf,
-      s.permanentAddress,
-    ];
-    return fields.some((v) => v && v.toLowerCase().includes(q));
-  });
+    if (!search) return true
+    const q = search.toLowerCase()
+    const fields = [formatName(s), s.serviceNumber, s.rank, s.formation, s.zone, s.gender, s.phoneNumber, s.email, s.stateOfOrigin, s.lgaOfOrigin, s.dateOfBirth, s.dateOfFirstAppointment, s.nin, s.bvn, s.nhf, s.permanentAddress]
+    return fields.some((v) => v && v.toLowerCase().includes(q))
+  })
 
   return (
     <div className="p-6 space-y-4">
-      <h1 className="text-2xl font-bold text-nis-primary">All Staff</h1>
+      <h1 className="text-2xl font-bold text-nis-primary">Formation Staff</h1>
 
       <input
         type="text"
@@ -135,7 +117,7 @@ export default function AllStaffDashboard() {
                   className="px-4 py-8 text-center text-gray-400"
                 >
                   {allStaff.length === 0
-                    ? "No staff records found."
+                    ? "No staff records found for your formation."
                     : "No records match your search."}
                 </td>
               </tr>
