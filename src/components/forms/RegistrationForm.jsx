@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useFormik } from "formik";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebase";
 import useLocationStore from "../../stores/locations/locations";
 import useAllStaffStore from "../../stores/shq-store/allStaffStore";
 import Button from "../buttons/Button";
@@ -97,13 +99,27 @@ const ZONES = [
   "ZONEH",
 ];
 
+function generatePassword() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$";
+  let password = "";
+  for (let i = 0; i < 10; i++) {
+    const array = new Uint32Array(1);
+    crypto.getRandomValues(array);
+    password += chars[array[0] % chars.length];
+  }
+  return password;
+}
+
 function validate(values) {
   const errors = {};
 
   if (!values.surname) errors.surname = "Surname is required";
   if (!values.firstName) errors.firstName = "First name is required";
-  if (!values.serviceNumber)
+  if (!values.serviceNumber) {
     errors.serviceNumber = "Service number is required";
+  } else if (!/^NIS\d{5}$/.test(values.serviceNumber)) {
+    errors.serviceNumber = "Service number must be in the format NISXXXXX (e.g. NIS00001)";
+  }
   if (!values.formation) errors.formation = "Formation is required";
   if (!values.zone) errors.zone = "Zone is required";
   if (!values.phoneNumber) {
@@ -257,6 +273,9 @@ function Section({ title, children }) {
 
 export default function RegistrationForm() {
   const [submitted, setSubmitted] = useState(null);
+  const [generatedPassword, setGeneratedPassword] = useState("");
+  const [submitError, setSubmitError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const states = useLocationStore((s) => s.states);
   const getLgas = useLocationStore((s) => s.getLgas);
   const addStaff = useAllStaffStore((s) => s.addStaff);
@@ -284,9 +303,21 @@ export default function RegistrationForm() {
       permanentAddress: "",
     },
     validate,
-    onSubmit: (values) => {
-      addStaff(values);
-      setSubmitted(values);
+    onSubmit: async (values) => {
+      setSubmitting(true);
+      setSubmitError("");
+      try {
+        const password = generatePassword();
+        const email = `${values.serviceNumber}@nis.gov.ng`;
+        const credential = await createUserWithEmailAndPassword(auth, email, password);
+        await addStaff({ ...values, authUid: credential.user.uid });
+        setGeneratedPassword(password);
+        setSubmitted(values);
+      } catch (error) {
+        setSubmitError(error.message);
+      } finally {
+        setSubmitting(false);
+      }
     },
   });
 
@@ -298,19 +329,41 @@ export default function RegistrationForm() {
       <div className="max-w-2xl mx-auto p-8 text-center">
         <div className="text-green-600 text-5xl mb-4">&#10003;</div>
         <h2 className="text-2xl font-bold text-nis-primary mb-2">
-          Registration Submitted
+          Registration Successful
         </h2>
         <p className="text-gray-600 mb-6">
-          Thank you,{" "}
           <span className="font-semibold">
             {submitted.title} {submitted.surname} {submitted.firstName}
-          </span>
-          . Your registration has been received successfully.
+          </span>{" "}
+          has been registered successfully.
         </p>
+
+        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-5 mb-6 text-left space-y-2">
+          <p className="text-sm font-semibold text-yellow-800">
+            Temporary Login Credentials
+          </p>
+          <div className="text-sm text-yellow-700 space-y-1">
+            <p>
+              Service Number:{" "}
+              <span className="font-mono font-bold">{submitted.serviceNumber}</span>
+            </p>
+            <p>
+              Password:{" "}
+              <span className="font-mono font-bold text-red-600 text-base">
+                {generatedPassword}
+              </span>
+            </p>
+          </div>
+          <p className="text-xs text-yellow-600 mt-2">
+            This password will not be shown again. Share it securely with the officer.
+          </p>
+        </div>
+
         <Button
           variant="secondary"
           onClick={() => {
             setSubmitted(null);
+            setGeneratedPassword("");
             formik.resetForm();
           }}
         >
@@ -389,7 +442,7 @@ export default function RegistrationForm() {
             id="serviceNumber"
             label="Service Number"
             formik={formik}
-            placeholder="e.g. NIS/2020/001"
+            placeholder="e.g. NIS00001"
             required
           />
           <Select
@@ -505,6 +558,12 @@ export default function RegistrationForm() {
         </div>
       </Section>
 
+      {submitError && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-700">
+          {submitError}
+        </div>
+      )}
+
       <div className="flex items-center justify-end gap-4 pt-2">
         <Button
           type="button"
@@ -513,7 +572,7 @@ export default function RegistrationForm() {
         >
           Reset
         </Button>
-        <Button type="submit" variant="primary" loading={formik.isSubmitting}>
+        <Button type="submit" variant="primary" loading={submitting}>
           Submit Registration
         </Button>
       </div>
