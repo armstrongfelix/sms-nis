@@ -16,7 +16,9 @@ import RegistrationForm from "./components/forms/RegistrationForm";
 import ZonalTest from "./components/ZonalTest";
 import FormationStaffDashboard from "./pages/FormationHeadPage/FormationStaffDashboard";
 import StaffLoginPage from "./pages/LoginPages/StaffLoginPage";
-
+import AdminRegistrationForm from "./components/forms/AdminRegistrationForm";
+import AllAdminsDashbord from "./pages/ServiceHeadPages/AllAdminsDashbord";
+import AdminLoginPage from "./pages/LoginPages/AdminLoginPage";
 
 function App() {
   return (
@@ -27,8 +29,11 @@ function App() {
       {/* <RegistrationForm /> */}
       {/* <ZonalTest /> */}
       {/* <FormationStaffDashboard/> */}
-      <StaffLoginPage />
-      
+      {/* <StaffLoginPage/> */}
+
+      {/* <AdminRegistrationForm/> */}
+      {/* <AllAdminsDashbord/> */}
+      {/* <AdminLoginPage/> */}
     </div>
   );
 }
