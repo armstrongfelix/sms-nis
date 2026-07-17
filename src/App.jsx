@@ -33,7 +33,7 @@ function App() {
 
       {/* <AdminRegistrationForm/> */}
       {/* <AllAdminsDashbord/> */}
-      <AdminLoginPage/>
+      {/* <AdminLoginPage/> */}
     </div>
   );
 }

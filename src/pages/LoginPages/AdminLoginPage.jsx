@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import { useAuth } from "../../contexts/AuthContext";
 import Button from "../../components/buttons/Button";
@@ -21,7 +20,6 @@ function validate(values) {
 }
 
 export default function AdminLoginPage() {
-  const navigate = useNavigate();
   const { adminLogin } = useAuth();
   const [authError, setAuthError] = useState(null);
 
@@ -32,7 +30,6 @@ export default function AdminLoginPage() {
       setAuthError(null);
       try {
         await adminLogin(values.email, values.password);
-        navigate("/register");
       } catch (err) {
         const map = {
           "auth/invalid-credential": "Invalid email or password",
