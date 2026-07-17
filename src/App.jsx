@@ -17,6 +17,7 @@ import ZonalTest from "./components/ZonalTest";
 import FormationStaffDashboard from "./pages/FormationHeadPage/FormationStaffDashboard";
 import StaffLoginPage from "./pages/LoginPages/StaffLoginPage";
 
+
 function App() {
   return (
     <div>
@@ -26,7 +27,8 @@ function App() {
       {/* <RegistrationForm /> */}
       {/* <ZonalTest /> */}
       {/* <FormationStaffDashboard/> */}
-      <StaffLoginPage/>
+      <StaffLoginPage />
+      
     </div>
   );
 }
