@@ -35,8 +35,6 @@ export default function AdminLoginPage() {
         navigate("/register");
       } catch (err) {
         const map = {
-          "auth/user-not-found": "No account found with this email",
-          "auth/wrong-password": "Incorrect password",
           "auth/invalid-credential": "Invalid email or password",
           "auth/invalid-email": "Enter a valid email address",
           "auth/too-many-requests": "Too many attempts. Try again later",
@@ -72,7 +70,7 @@ export default function AdminLoginPage() {
         </a>
 
         <div className="w-25 h-25 bg-nis-secondary/5 rounded-full flex items-center justify-center mx-auto p-2 ">
-          <img src="src\assets\images\nis-logo.png" alt="nis-logo" />
+          <img src="src/assets/images/nis-logo.png" alt="nis-logo" />
         </div>
 
         <div className="text-center space-y-2 mb-8  pt-10">
@@ -102,7 +100,7 @@ export default function AdminLoginPage() {
               <input
                 id="email"
                 type="email"
-                placeholder="admin@nis.gov.ng"
+                placeholder="roleformationadmin@nis.gov.ng"
                 className={[
                   "w-full pl-10 pr-4 py-2.5 rounded-lg border text-sm transition-colors duration-200",
                   "focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary",
