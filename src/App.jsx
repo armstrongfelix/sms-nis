@@ -32,7 +32,7 @@ function App() {
       {/* <StaffLoginPage/> */}
 
       {/* <AdminRegistrationForm/> */}
-      {/* <AllAdminsDashbord/> */}
+      <AllAdminsDashbord/>
       {/* <AdminLoginPage/> */}
     </div>
   );
