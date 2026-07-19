@@ -7,7 +7,7 @@ export default function WelcomePage() {
       <div className="bg-white rounded-2xl shadow-2xl p-10 md:p-14 max-w-lg w-full text-center space-y-8">
         <div className="space-y-2 gap-4">
           <div className="w-30 h-30 bg-white rounded-full flex items-center justify-center mx-auto">
-            <img src="src\assets\images\nis-logo.png" alt="nis-logo" />
+            <img src="src/assets/images/nis-logo.png" alt="nis-logo" />
           </div>
           <h1 className="text-2xl md:text-3xl font-bold text-nis-primary">
             Nigeria Immigration Service
@@ -23,6 +23,7 @@ export default function WelcomePage() {
             size="lg"
             leftIcon={<FiUsers />}
             className="flex-1"
+            to="/staff-login"
           >
             Login as Staff
           </Button>
@@ -31,6 +32,7 @@ export default function WelcomePage() {
             size="lg"
             leftIcon={<FiShield />}
             className="flex-1"
+            to="/admin-login"
           >
             Login as Admin
           </Button>

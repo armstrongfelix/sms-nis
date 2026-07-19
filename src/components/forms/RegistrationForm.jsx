@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useFormik } from "formik";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth } from "../../firebase";
 import useLocationStore from "../../stores/locations/locations";
 import useAllStaffStore from "../../stores/shq-store/allStaffStore";
@@ -271,14 +272,43 @@ function Section({ title, children }) {
   );
 }
 
+function Dialog({ open, onClose, children }) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="fixed inset-0 bg-black/40" onClick={onClose} />
+      <div className="relative bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 z-10">
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export default function RegistrationForm() {
-  const [submitted, setSubmitted] = useState(null);
-  const [generatedPassword, setGeneratedPassword] = useState("");
+  const navigate = useNavigate();
   const [submitError, setSubmitError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [passwordDialog, setPasswordDialog] = useState(null);
+  const [submitted, setSubmitted] = useState(null);
+  const [adminPassword, setAdminPassword] = useState("");
+  const [reauthError, setReauthError] = useState("");
   const states = useLocationStore((s) => s.states);
   const getLgas = useLocationStore((s) => s.getLgas);
   const addStaff = useAllStaffStore((s) => s.addStaff);
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("pendingStaffSuccess");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const fiveMin = 5 * 60 * 1000;
+        if (Date.now() - parsed.timestamp < fiveMin) {
+          setPasswordDialog(parsed);
+          setSubmitted(parsed);
+        }
+      }
+    } catch {}
+  }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -303,77 +333,151 @@ export default function RegistrationForm() {
       permanentAddress: "",
     },
     validate,
-    onSubmit: async (values) => {
-      setSubmitting(true);
-      setSubmitError("");
-      try {
-        const password = generatePassword();
-        const email = `${values.serviceNumber}@nis.gov.ng`;
-        const credential = await createUserWithEmailAndPassword(auth, email, password);
-        await addStaff({ ...values, authUid: credential.user.uid });
-        setGeneratedPassword(password);
-        setSubmitted(values);
-      } catch (error) {
-        setSubmitError(error.message);
-      } finally {
-        setSubmitting(false);
-      }
+    onSubmit: (values) => {
+      const password = generatePassword();
+      setAdminPassword("");
+      setReauthError("");
+      setPasswordDialog({ ...values, password });
     },
   });
 
   const selectedState = formik.values.stateOfOrigin;
   const lgaOptions = selectedState ? getLgas(selectedState) : [];
 
-  if (submitted) {
-    return (
-      <div className="max-w-2xl mx-auto p-8 text-center">
-        <div className="text-green-600 text-5xl mb-4">&#10003;</div>
-        <h2 className="text-2xl font-bold text-nis-primary mb-2">
-          Registration Successful
-        </h2>
-        <p className="text-gray-600 mb-6">
-          <span className="font-semibold">
-            {submitted.title} {submitted.surname} {submitted.firstName}
-          </span>{" "}
-          has been registered successfully.
-        </p>
-
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-5 mb-6 text-left space-y-2">
-          <p className="text-sm font-semibold text-yellow-800">
-            Temporary Login Credentials
-          </p>
-          <div className="text-sm text-yellow-700 space-y-1">
-            <p>
-              Service Number:{" "}
-              <span className="font-mono font-bold">{submitted.serviceNumber}</span>
-            </p>
-            <p>
-              Password:{" "}
-              <span className="font-mono font-bold text-red-600 text-base">
-                {generatedPassword}
+  return (
+    <>
+      <Dialog open={!!passwordDialog} onClose={() => { if (!submitting) { sessionStorage.removeItem("pendingStaffSuccess"); setPasswordDialog(null); setSubmitted(null); } }}>
+        {!submitted ? (
+          <div className="text-center">
+            <div className="text-green-600 text-5xl mb-4">&#10003;</div>
+            <h2 className="text-xl font-bold text-nis-primary mb-2">
+              Staff Registration
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Generated login credentials for{" "}
+              <span className="font-semibold">
+                {passwordDialog?.title} {passwordDialog?.surname} {passwordDialog?.firstName}
               </span>
             </p>
+            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-5 mb-6 text-left space-y-2">
+              <p className="text-sm font-semibold text-yellow-800">
+                Temporary Login Credentials
+              </p>
+              <div className="text-sm text-yellow-700 space-y-1">
+                <p>
+                  Service Number:{" "}
+                  <span className="font-mono font-bold">{passwordDialog?.serviceNumber}</span>
+                </p>
+                <p>
+                  Password:{" "}
+                  <span className="font-mono font-bold text-red-600 text-base">
+                    {passwordDialog?.password}
+                  </span>
+                </p>
+              </div>
+              <p className="text-xs text-yellow-600 mt-2">
+                Share these credentials securely with the officer.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-1.5 mb-4 text-left">
+              <label htmlFor="adminPassword" className="text-sm font-medium text-nis-primary">
+                Your Admin Password
+              </label>
+              <input
+                id="adminPassword"
+                type="password"
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+                placeholder="Enter your password to confirm"
+                className="px-4 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary"
+              />
+              {reauthError && (
+                <span className="text-xs text-red-500">{reauthError}</span>
+              )}
+            </div>
+
+            <Button
+              variant="primary"
+              loading={submitting}
+              onClick={async () => {
+                if (!adminPassword) {
+                  setReauthError("Please enter your admin password");
+                  return;
+                }
+                const data = passwordDialog;
+                setSubmitting(true);
+                setSubmitError("");
+                setReauthError("");
+                try {
+                  const email = `${data.serviceNumber}@nis.gov.ng`;
+                  const adminEmail = auth.currentUser.email;
+
+                  sessionStorage.setItem(
+                    "pendingStaffSuccess",
+                    JSON.stringify({ ...data, email, timestamp: Date.now() })
+                  );
+
+                  const credential = await createUserWithEmailAndPassword(auth, email, data.password);
+                  await addStaff({ ...data, email, authUid: credential.user.uid });
+                  await signOut(auth);
+                  await signInWithEmailAndPassword(auth, adminEmail, adminPassword);
+                  window.location.href = "/dashboard/register-staff";
+                } catch (error) {
+                  sessionStorage.removeItem("pendingStaffSuccess");
+                  if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password") {
+                    setReauthError("Incorrect admin password. Try again.");
+                  } else {
+                    setSubmitError(error.message);
+                  }
+                } finally {
+                  setSubmitting(false);
+                }
+              }}
+            >
+              Confirm Registration
+            </Button>
           </div>
-          <p className="text-xs text-yellow-600 mt-2">
-            This password will not be shown again. Share it securely with the officer.
-          </p>
-        </div>
+        ) : (
+          <div className="text-center">
+            <div className="text-green-600 text-5xl mb-4">&#10003;</div>
+            <h2 className="text-xl font-bold text-nis-primary mb-2">
+              Registration Successful
+            </h2>
+            <p className="text-gray-600 mb-6">
+              <span className="font-semibold">
+                {submitted.title} {submitted.surname} {submitted.firstName}
+              </span>{" "}
+              has been registered successfully.
+            </p>
+            <div className="flex flex-col gap-3">
+              <Button
+                variant="primary"
+                onClick={() => {
+                  sessionStorage.removeItem("pendingStaffSuccess");
+                  setPasswordDialog(null);
+                  setSubmitted(null);
+                  formik.resetForm();
+                }}
+              >
+                Register Another Staff
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  sessionStorage.removeItem("pendingStaffSuccess");
+                  setPasswordDialog(null);
+                  setSubmitted(null);
+                  navigate("/dashboard");
+                }}
+              >
+                Go to Dashboard
+              </Button>
+            </div>
+          </div>
+        )}
+      </Dialog>
 
-        <Button
-          variant="secondary"
-          onClick={() => {
-            setSubmitted(null);
-            setGeneratedPassword("");
-            formik.resetForm();
-          }}
-        >
-          Register Another Officer
-        </Button>
-      </div>
-    );
-  }
-
-  return (
     <form
       onSubmit={formik.handleSubmit}
       className="max-w-4xl mx-auto p-6 space-y-6"
@@ -577,5 +681,6 @@ export default function RegistrationForm() {
         </Button>
       </div>
     </form>
+    </>
   );
 }

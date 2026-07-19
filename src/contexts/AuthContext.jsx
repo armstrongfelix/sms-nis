@@ -17,12 +17,18 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setLoading(true);
       setUser(currentUser);
       if (currentUser) {
-        const snap = await getDoc(doc(db, "admins", currentUser.uid));
-        const data = snap.exists() ? { id: snap.id, ...snap.data() } : null;
-        setAdminData(data);
-        useAdminDataStore.getState().setAdminData(data);
+        try {
+          const snap = await getDoc(doc(db, "admins", currentUser.uid));
+          const data = snap.exists() ? { id: snap.id, ...snap.data() } : null;
+          setAdminData(data);
+          useAdminDataStore.getState().setAdminData(data);
+        } catch {
+          setAdminData(null);
+          useAdminDataStore.getState().clearAdminData();
+        }
       } else {
         setAdminData(null);
         useAdminDataStore.getState().clearAdminData();

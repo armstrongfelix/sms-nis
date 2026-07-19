@@ -1,4 +1,5 @@
 import { forwardRef } from 'react'
+import { Link } from 'react-router-dom'
 
 const variantStyles = {
   primary:
@@ -31,26 +32,38 @@ const Button = forwardRef(
       leftIcon,
       rightIcon,
       type = 'button',
+      to,
       ...props
     },
     ref,
   ) => {
     const isDisabled = disabled || loading
+    const classes = [
+      'inline-flex items-center justify-center font-medium rounded-lg transition-colors duration-200',
+      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+      'disabled:opacity-50 disabled:cursor-not-allowed',
+      'cursor-pointer select-none',
+      variantStyles[variant] || variantStyles.primary,
+      sizeStyles[size] || sizeStyles.md,
+      className,
+    ].join(' ')
+
+    if (to && !isDisabled) {
+      return (
+        <Link to={to} className={classes} ref={ref} {...props}>
+          {leftIcon && <span className="inline-flex shrink-0">{leftIcon}</span>}
+          {children}
+          {rightIcon && <span className="inline-flex shrink-0">{rightIcon}</span>}
+        </Link>
+      )
+    }
 
     return (
       <button
         ref={ref}
         type={type}
         disabled={isDisabled}
-        className={[
-          'inline-flex items-center justify-center font-medium rounded-lg transition-colors duration-200',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-          'disabled:opacity-50 disabled:cursor-not-allowed',
-          'cursor-pointer select-none',
-          variantStyles[variant] || variantStyles.primary,
-          sizeStyles[size] || sizeStyles.md,
-          className,
-        ].join(' ')}
+        className={classes}
         {...props}
       >
         {loading ? (

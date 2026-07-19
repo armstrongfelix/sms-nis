@@ -1,6 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../firebase";
 import { useAuth } from "../../contexts/AuthContext";
+import useAdminDataStore from "../../stores/admin-data/adminDataStore";
 import Button from "../../components/buttons/Button";
 import { FiMail, FiLock, FiArrowLeft, FiAlertCircle } from "react-icons/fi";
 
@@ -19,9 +23,37 @@ function validate(values) {
   return errors;
 }
 
+function getDashboardPath(formation, zone) {
+  if (zone === "SHQ" && formation === "SHQ") {
+    return "/dashboard/all-staff";
+  }
+  if (zone === formation) {
+    return "/dashboard/zonal-staff";
+  }
+  return "/dashboard/formation-staff";
+}
+
 export default function AdminLoginPage() {
-  const { adminLogin } = useAuth();
+  const navigate = useNavigate();
+  const { user, adminData, adminLogin } = useAuth();
   const [authError, setAuthError] = useState(null);
+
+  useEffect(() => {
+    if (user && adminData) {
+      navigate(
+        getDashboardPath(adminData.formation, adminData.zone),
+        { replace: true }
+      );
+    } else if (user) {
+      const data = useAdminDataStore.getState().adminData;
+      if (data) {
+        navigate(
+          getDashboardPath(data.formation, data.zone),
+          { replace: true }
+        );
+      }
+    }
+  }, [user, adminData, navigate]);
 
   const formik = useFormik({
     initialValues: { email: "", password: "" },
@@ -29,7 +61,17 @@ export default function AdminLoginPage() {
     onSubmit: async (values, { setSubmitting }) => {
       setAuthError(null);
       try {
-        await adminLogin(values.email, values.password);
+        const credential = await adminLogin(values.email, values.password);
+        const snap = await getDoc(doc(db, "admins", credential.user.uid));
+        if (snap.exists()) {
+          const admin = snap.data();
+          navigate(
+            getDashboardPath(admin.formation, admin.zone),
+            { replace: true }
+          );
+        } else {
+          setAuthError("Admin account not found");
+        }
       } catch (err) {
         const map = {
           "auth/invalid-credential": "Invalid email or password",
@@ -59,12 +101,12 @@ export default function AdminLoginPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-nis-primary to-nis-primary-light flex items-center justify-center p-6">
       <div className="bg-white rounded-2xl shadow-2xl p-10 md:p-14 max-w-md w-full gap-4">
-        <a
-          href="/"
-          className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-nis-primary transition-colors mb-8"
+        <button
+          onClick={() => navigate("/")}
+          className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-nis-primary transition-colors mb-8 cursor-pointer"
         >
           <FiArrowLeft /> Back
-        </a>
+        </button>
 
         <div className="w-25 h-25 bg-nis-secondary/5 rounded-full flex items-center justify-center mx-auto p-2 ">
           <img src="src/assets/images/nis-logo.png" alt="nis-logo" />

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useFormik } from "formik";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase";
 import Button from "../buttons/Button";
@@ -96,6 +96,18 @@ function generatePassword() {
   return password;
 }
 
+function Dialog({ open, onClose, children }) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="fixed inset-0 bg-black/40" onClick={onClose} />
+      <div className="relative bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 z-10">
+        {children}
+      </div>
+    </div>
+  );
+}
+
 function validate(values) {
   const errors = {};
   if (!values.zone) errors.zone = "Zone is required";
@@ -168,10 +180,26 @@ function Select({ label, id, formik, options, placeholder, required }) {
 }
 
 export default function AdminRegistrationForm() {
-  const [submitted, setSubmitted] = useState(null);
-  const [generatedPassword, setGeneratedPassword] = useState("");
   const [submitError, setSubmitError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [passwordDialog, setPasswordDialog] = useState(null);
+  const [submitted, setSubmitted] = useState(null);
+  const [adminPassword, setAdminPassword] = useState("");
+  const [reauthError, setReauthError] = useState("");
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("pendingAdminSuccess");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const fiveMin = 5 * 60 * 1000;
+        if (Date.now() - parsed.timestamp < fiveMin) {
+          setPasswordDialog(parsed);
+          setSubmitted(parsed);
+        }
+      }
+    } catch {}
+  }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -181,161 +209,233 @@ export default function AdminRegistrationForm() {
       email: "",
     },
     validate,
-    onSubmit: async (values) => {
-      const email = `${values.role.toLowerCase()}${values.formation.toLowerCase()}admin@nis.gov.ng`;
-      setSubmitting(true);
-      setSubmitError("");
-      try {
-        const password = generatePassword();
-        const credential = await createUserWithEmailAndPassword(auth, email, password);
-        await setDoc(doc(db, "admins", credential.user.uid), {
-          zone: values.zone,
-          formation: values.formation,
-          role: values.role,
-          email,
-        });
-        setGeneratedPassword(password);
-        setSubmitted({ ...values, email });
-      } catch (error) {
-        setSubmitError(error.message);
-      } finally {
-        setSubmitting(false);
-      }
+    onSubmit: (values) => {
+      const email = `${values.role.toLowerCase().replace(/\s+/g, "")}${values.formation.toLowerCase()}admin@nis.gov.ng`;
+      const password = generatePassword();
+      setAdminPassword("");
+      setReauthError("");
+      setPasswordDialog({ ...values, email, password });
     },
   });
 
   const formation = formik.values.formation;
   const role = formik.values.role;
-  const computedEmail = (formation && role) ? `${role.toLowerCase()}${formation.toLowerCase()}admin@nis.gov.ng` : "";
+  const computedEmail = (formation && role) ? `${role.toLowerCase().replace(/\s+/g, "")}${formation.toLowerCase()}admin@nis.gov.ng` : "";
 
   useEffect(() => {
     formik.setFieldValue("email", computedEmail);
   }, [formation, role]);
 
-  if (submitted) {
-    return (
-      <div className="max-w-2xl mx-auto p-8 text-center">
-        <div className="text-green-600 text-5xl mb-4">&#10003;</div>
-        <h2 className="text-2xl font-bold text-nis-primary mb-2">
-          Admin Registration Successful
-        </h2>
-        <p className="text-gray-600 mb-6">
-          Admin with email{" "}
-          <span className="font-semibold">{submitted.email}</span> has been
-          registered successfully.
-        </p>
-
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-5 mb-6 text-left space-y-2">
-          <p className="text-sm font-semibold text-yellow-800">
-            Temporary Login Credentials
-          </p>
-          <div className="text-sm text-yellow-700 space-y-1">
-            <p>
-              Email:{" "}
-              <span className="font-mono font-bold">{submitted.email}</span>
-            </p>
-            <p>
-              Password:{" "}
-              <span className="font-mono font-bold text-red-600 text-base">
-                {generatedPassword}
-              </span>
-            </p>
-          </div>
-          <p className="text-xs text-yellow-600 mt-2">
-            This password will not be shown again. Share it securely with the
-            admin.
-          </p>
-        </div>
-
-        <Button
-          variant="secondary"
-          onClick={() => {
-            setSubmitted(null);
-            setGeneratedPassword("");
-            formik.resetForm();
-          }}
-        >
-          Register Another Admin
-        </Button>
-      </div>
-    );
-  }
-
   return (
-    <form
-      onSubmit={formik.handleSubmit}
-      className="max-w-2xl mx-auto p-6 space-y-6"
-    >
-      <div className="mb-2">
-        <h1 className="text-2xl font-bold text-nis-primary">
-          Admin Registration
-        </h1>
-        <p className="text-sm text-gray-500">
-          Register a new administrator for the system
-        </p>
-      </div>
+    <>
+      <Dialog open={!!passwordDialog} onClose={() => { if (!submitting) { sessionStorage.removeItem("pendingAdminSuccess"); setPasswordDialog(null); setSubmitted(null); } }}>
+        {!submitted ? (
+          <div className="text-center">
+            <div className="text-green-600 text-5xl mb-4">&#10003;</div>
+            <h2 className="text-xl font-bold text-nis-primary mb-2">
+              Admin Registration
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Generated login credentials for{" "}
+              <span className="font-semibold">{passwordDialog?.email}</span>
+            </p>
+            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-5 mb-6 text-left space-y-2">
+              <p className="text-sm font-semibold text-yellow-800">
+                Temporary Login Credentials
+              </p>
+              <div className="text-sm text-yellow-700 space-y-1">
+                <p>
+                  Email:{" "}
+                  <span className="font-mono font-bold">{passwordDialog?.email}</span>
+                </p>
+                <p>
+                  Password:{" "}
+                  <span className="font-mono font-bold text-red-600 text-base">
+                    {passwordDialog?.password}
+                  </span>
+                </p>
+              </div>
+              <p className="text-xs text-yellow-600 mt-2">
+                Share these credentials securely with the new admin.
+              </p>
+            </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Select
-          id="zone"
-          label="Zone"
-          formik={formik}
-          options={ZONES}
-          placeholder="Select zone"
-          required
-        />
-        <Select
-          id="formation"
-          label="Formation"
-          formik={formik}
-          options={FORMATIONS}
-          placeholder="Select formation"
-          required
-        />
-      </div>
+            <div className="flex flex-col gap-1.5 mb-4 text-left">
+              <label htmlFor="adminPassword" className="text-sm font-medium text-nis-primary">
+                Your Admin Password
+              </label>
+              <input
+                id="adminPassword"
+                type="password"
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+                placeholder="Enter your password to confirm"
+                className="px-4 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary"
+              />
+              {reauthError && (
+                <span className="text-xs text-red-500">{reauthError}</span>
+              )}
+            </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Select
-          id="role"
-          label="Role"
-          formik={formik}
-          options={ROLES}
-          placeholder="Select role"
-          required
-        />
-        <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-nis-primary">
-            Email Address <span className="text-red-500">*</span>
-          </label>
-          <input
-            value={computedEmail}
-            disabled
-            className="px-4 py-2.5 rounded-lg border text-sm bg-gray-100 border-gray-300 text-gray-600 cursor-not-allowed"
+            <Button
+              variant="primary"
+              loading={submitting}
+              onClick={async () => {
+                if (!adminPassword) {
+                  setReauthError("Please enter your admin password");
+                  return;
+                }
+                const data = passwordDialog;
+                setSubmitting(true);
+                setSubmitError("");
+                setReauthError("");
+                try {
+                  const adminEmail = auth.currentUser.email;
+
+                  sessionStorage.setItem(
+                    "pendingAdminSuccess",
+                    JSON.stringify({ ...data, timestamp: Date.now() })
+                  );
+
+                  const credential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+                  await setDoc(doc(db, "admins", credential.user.uid), {
+                    zone: data.zone,
+                    formation: data.formation,
+                    role: data.role,
+                    email: data.email,
+                  });
+                  await signOut(auth);
+                  await signInWithEmailAndPassword(auth, adminEmail, adminPassword);
+                  window.location.href = "/dashboard/register-admin";
+                } catch (error) {
+                  sessionStorage.removeItem("pendingAdminSuccess");
+                  if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password") {
+                    setReauthError("Incorrect admin password. Try again.");
+                  } else {
+                    setSubmitError(error.message);
+                  }
+                } finally {
+                  setSubmitting(false);
+                }
+              }}
+            >
+              Confirm Registration
+            </Button>
+          </div>
+        ) : (
+          <div className="text-center">
+            <div className="text-green-600 text-5xl mb-4">&#10003;</div>
+            <h2 className="text-xl font-bold text-nis-primary mb-2">
+              Registration Successful
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Admin with email{" "}
+              <span className="font-semibold">{submitted.email}</span>{" "}
+              has been registered successfully.
+            </p>
+            <div className="flex flex-col gap-3">
+              <Button
+                variant="primary"
+                onClick={() => {
+                  sessionStorage.removeItem("pendingAdminSuccess");
+                  setPasswordDialog(null);
+                  setSubmitted(null);
+                  formik.resetForm();
+                }}
+              >
+                Register Another Admin
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  sessionStorage.removeItem("pendingAdminSuccess");
+                  setPasswordDialog(null);
+                  setSubmitted(null);
+                  window.location.href = "/dashboard";
+                }}
+              >
+                Go to Dashboard
+              </Button>
+            </div>
+          </div>
+        )}
+      </Dialog>
+
+      <form
+        onSubmit={formik.handleSubmit}
+        className="max-w-2xl mx-auto p-6 space-y-6"
+      >
+        <div className="mb-2">
+          <h1 className="text-2xl font-bold text-nis-primary">
+            Admin Registration
+          </h1>
+          <p className="text-sm text-gray-500">
+            Register a new administrator for the system
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Select
+            id="zone"
+            label="Zone"
+            formik={formik}
+            options={ZONES}
+            placeholder="Select zone"
+            required
           />
-          <span className="text-xs text-gray-400">
-            Auto-generated from formation
-          </span>
+          <Select
+            id="formation"
+            label="Formation"
+            formik={formik}
+            options={FORMATIONS}
+            placeholder="Select formation"
+            required
+          />
         </div>
-      </div>
 
-      {submitError && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-700">
-          {submitError}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Select
+            id="role"
+            label="Role"
+            formik={formik}
+            options={ROLES}
+            placeholder="Select role"
+            required
+          />
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-nis-primary">
+              Email Address <span className="text-red-500">*</span>
+            </label>
+            <input
+              value={computedEmail}
+              disabled
+              className="px-4 py-2.5 rounded-lg border text-sm bg-gray-100 border-gray-300 text-gray-600 cursor-not-allowed"
+            />
+            <span className="text-xs text-gray-400">
+              Auto-generated from formation
+            </span>
+          </div>
         </div>
-      )}
 
-      <div className="flex items-center justify-end gap-4 pt-2">
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={() => formik.resetForm()}
-        >
-          Reset
-        </Button>
-        <Button type="submit" variant="primary" loading={submitting}>
-          Register Admin
-        </Button>
-      </div>
-    </form>
+        {submitError && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-700">
+            {submitError}
+          </div>
+        )}
+
+        <div className="flex items-center justify-end gap-4 pt-2">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => formik.resetForm()}
+          >
+            Reset
+          </Button>
+          <Button type="submit" variant="primary" loading={submitting}>
+            Register Admin
+          </Button>
+        </div>
+      </form>
+    </>
   );
 }
