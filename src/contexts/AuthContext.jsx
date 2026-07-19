@@ -6,6 +6,7 @@ import {
 } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
+import useAdminDataStore from "../stores/admin-data/adminDataStore";
 
 const AuthContext = createContext(null);
 
@@ -19,9 +20,12 @@ export function AuthProvider({ children }) {
       setUser(currentUser);
       if (currentUser) {
         const snap = await getDoc(doc(db, "admins", currentUser.uid));
-        setAdminData(snap.exists() ? snap.data() : null);
+        const data = snap.exists() ? { id: snap.id, ...snap.data() } : null;
+        setAdminData(data);
+        useAdminDataStore.getState().setAdminData(data);
       } else {
         setAdminData(null);
+        useAdminDataStore.getState().clearAdminData();
       }
       setLoading(false);
     });

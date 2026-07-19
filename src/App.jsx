@@ -20,6 +20,7 @@ import AdminRegistrationForm from "./components/forms/AdminRegistrationForm";
 import AllAdminsDashbord from "./pages/ServiceHeadPages/AllAdminsDashbord";
 import AdminLoginPage from "./pages/LoginPages/AdminLoginPage";
 
+
 function App() {
   return (
     <div>
@@ -32,8 +33,8 @@ function App() {
       {/* <StaffLoginPage/> */}
 
       {/* <AdminRegistrationForm/> */}
-      <AllAdminsDashbord/>
-      {/* <AdminLoginPage/> */}
+      {/* <AllAdminsDashbord/> */}
+      <AdminLoginPage />
     </div>
   );
 }
