@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import useStaffStore from "../../stores/staff-store/staffStore";
 import Button from "../../components/buttons/Button";
-import { FiHash, FiLock, FiAlertCircle, FiLogOut } from "react-icons/fi";
+import { FiHash, FiLock, FiAlertCircle, FiLogOut, FiArrowLeft } from "react-icons/fi";
 
 export default function StaffLoginPage() {
+  const navigate = useNavigate();
   const [serviceNumber, setServiceNumber] = useState("");
   const [password, setPassword] = useState("");
   const { staffData, loading, error, login, logout } = useStaffStore();
@@ -80,7 +82,18 @@ export default function StaffLoginPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-nis-primary to-nis-primary-light flex items-center justify-center p-6">
       <div className="bg-white rounded-2xl shadow-2xl p-10 md:p-14 max-w-md w-full">
-        <div className="text-center space-y-2 mb-8">
+        <button
+          onClick={() => navigate("/")}
+          className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-nis-primary transition-colors mb-8 cursor-pointer"
+        >
+          <FiArrowLeft /> Back
+        </button>
+
+        <div className="w-25 h-25 bg-nis-secondary/5 rounded-full flex items-center justify-center mx-auto p-2 ">
+          <img src="src/assets/images/nis-logo.png" alt="nis-logo" />
+        </div>
+
+        <div className="text-center space-y-2 mb-8 pt-10">
           <h1 className="text-xl font-bold text-nis-primary">Staff Login</h1>
           <p className="text-sm text-gray-500">Sign in with your service number</p>
         </div>
