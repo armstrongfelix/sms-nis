@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import ProtectedRoute, {
   DashboardRedirect,
 } from "../components/layout/ProtectedRoute";
+import RootLayout from "../components/layout/RootLayout";
 
 import WelcomePage from "../pages/WelcomePage";
 import AdminLoginPage from "../pages/LoginPages/AdminLoginPage";
@@ -30,13 +31,18 @@ const router = createBrowserRouter([
     path: "/dashboard",
     element: <ProtectedRoute />,
     children: [
-      { index: true, element: <DashboardRedirect /> },
-      { path: "all-staff", element: <AllStaffDashboard /> },
-      { path: "all-admins", element: <AllAdminsDashbord /> },
-      { path: "zonal-staff", element: <ZonalStaffDashboard /> },
-      { path: "formation-staff", element: <FormationStaffDashboard /> },
-      { path: "register-staff", element: <RegistrationForm /> },
-      { path: "register-admin", element: <AdminRegistrationForm /> },
+      {
+        element: <RootLayout />,
+        children: [
+          { index: true, element: <DashboardRedirect /> },
+          { path: "all-staff", element: <AllStaffDashboard /> },
+          { path: "all-admins", element: <AllAdminsDashbord /> },
+          { path: "zonal-staff", element: <ZonalStaffDashboard /> },
+          { path: "formation-staff", element: <FormationStaffDashboard /> },
+          { path: "register-staff", element: <RegistrationForm /> },
+          { path: "register-admin", element: <AdminRegistrationForm /> },
+        ],
+      },
     ],
   },
 ]);
