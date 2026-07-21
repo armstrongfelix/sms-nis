@@ -56,14 +56,11 @@ export default function AllStaffDashboard() {
     setForm((prev) => ({ ...prev, [id]: value }));
   }
 
-  const formatName = (s) =>
-    `${s.title} ${s.surname} ${s.firstName}${s.middleName ? ` ${s.middleName}` : ""}`;
-
   const filteredStaff = allStaff.filter((s) => {
     if (!search) return true;
     const q = search.toLowerCase();
     const fields = [
-      formatName(s),
+      s.surname, s.firstName, s.middleName,
       s.serviceNumber,
       s.rank,
       s.formation,
@@ -95,13 +92,15 @@ export default function AllStaffDashboard() {
         className="w-full px-4 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary"
       />
 
-      <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
-        <table className="w-full text-sm text-left">
-          <thead className="bg-gray-50 text-nis-primary font-semibold">
+      <div className="overflow-auto max-h-[calc(100vh-140px)] rounded-xl border border-gray-200 shadow-sm">
+        <table className="w-full text-sm text-left bg-white">
+          <thead className="sticky top-0 z-30 bg-white text-nis-primary font-semibold">
             <tr>
-              <th className="px-4 py-3">S/N</th>
-              <th className="px-4 py-3 w-10" />
-              <th className="px-4 py-3 whitespace-nowrap">Name</th>
+              <th className="px-4 py-3 sticky left-0 top-0 z-20 bg-white min-w-[50px]">S/N</th>
+              <th className="px-4 py-3 w-10 sticky left-[50px] top-0 z-20 bg-white" />
+              <th className="px-4 py-3 whitespace-nowrap sticky left-[90px] top-0 z-20 bg-white min-w-[120px]">Surname</th>
+              <th className="px-4 py-3 whitespace-nowrap">First Name</th>
+              <th className="px-4 py-3 whitespace-nowrap">Middle Name</th>
               <th className="px-4 py-3 whitespace-nowrap">Service No</th>
               <th className="px-4 py-3 whitespace-nowrap">Rank</th>
               <th className="px-4 py-3 whitespace-nowrap">Formation</th>
@@ -124,14 +123,14 @@ export default function AllStaffDashboard() {
           <tbody className="divide-y divide-gray-100">
             {loading ? (
               <tr>
-                <td colSpan={18} className="px-4 py-12 text-center">
+                <td colSpan={20} className="px-4 py-12 text-center">
                   <LoadingSpinner size="lg" />
                 </td>
               </tr>
             ) : filteredStaff.length === 0 ? (
               <tr>
                 <td
-                  colSpan={18}
+                  colSpan={20}
                   className="px-4 py-8 text-center text-gray-400"
                 >
                   {allStaff.length === 0
@@ -142,8 +141,8 @@ export default function AllStaffDashboard() {
             ) : (
               filteredStaff.map((s, i) => (
                 <tr key={s.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-2.5">{i + 1}</td>
-                  <td className="px-4 py-2.5">
+                  <td className="px-4 py-2.5 sticky left-0 z-20 bg-white min-w-[50px]">{i + 1}</td>
+                  <td className="px-4 py-2.5 sticky left-[50px] z-20 bg-white">
                     <button
                       onClick={() => openEdit(s)}
                       className="hover:text-nis-tertiary text-nis-secondary active:text-nis-primary transition-colors"
@@ -152,9 +151,9 @@ export default function AllStaffDashboard() {
                       <FiEdit2 size={16} />
                     </button>
                   </td>
-                  <td className="px-4 py-2.5 font-medium whitespace-nowrap">
-                    {formatName(s)}
-                  </td>
+                  <td className="px-4 py-2.5 whitespace-nowrap sticky left-[90px] z-20 bg-white min-w-[120px]">{s.surname}</td>
+                  <td className="px-4 py-2.5 whitespace-nowrap">{s.firstName}</td>
+                  <td className="px-4 py-2.5 whitespace-nowrap">{s.middleName}</td>
                   <td className="px-4 py-2.5">{s.serviceNumber}</td>
                   <td className="px-4 py-2.5">{s.rank}</td>
                   <td className="px-4 py-2.5">{s.formation}</td>

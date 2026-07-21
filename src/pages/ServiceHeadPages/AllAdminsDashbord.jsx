@@ -59,11 +59,11 @@ export default function AllAdminsDashbord() {
         className="w-full px-4 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary"
       />
 
-      <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
-        <table className="w-full text-sm text-left">
-          <thead className="bg-gray-50 text-nis-primary font-semibold">
+      <div className="overflow-auto max-h-[calc(100vh-140px)] rounded-xl border border-gray-200 shadow-sm">
+        <table className="w-full text-sm text-left bg-white">
+          <thead className="sticky top-0 z-30 bg-white text-nis-primary font-semibold">
             <tr>
-              <th className="px-4 py-3">S/N</th>
+              <th className="px-4 py-3 sticky left-0 top-0 z-20 bg-white">S/N</th>
               <th className="px-4 py-3 whitespace-nowrap">Zone</th>
               <th className="px-4 py-3 whitespace-nowrap">Formation</th>
               <th className="px-4 py-3 whitespace-nowrap">Role</th>
@@ -92,7 +92,7 @@ export default function AllAdminsDashbord() {
                   onClick={() => setSelected(a)}
                   className="hover:bg-gray-50 transition-colors cursor-pointer"
                 >
-                  <td className="px-4 py-2.5">{i + 1}</td>
+                  <td className="px-4 py-2.5 sticky left-0 z-20 bg-white">{i + 1}</td>
                   <td className="px-4 py-2.5">{a.zone}</td>
                   <td className="px-4 py-2.5">{a.formation}</td>
                   <td className="px-4 py-2.5">{a.role}</td>
