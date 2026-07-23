@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import {
   FiGrid, FiUsers, FiShield, FiUserPlus, FiUserCheck,
-  FiMapPin, FiBriefcase, FiLogOut, FiMenu, FiX,
+  FiMapPin, FiBriefcase, FiBarChart2, FiLogOut, FiMenu, FiX,
 } from "react-icons/fi";
 
 function getNavLinks(adminData) {
@@ -16,6 +16,7 @@ function getNavLinks(adminData) {
 
   if (zone === "SHQ" && formation === "SHQ") {
     links.push(
+      { to: "/dashboard/analytics", label: "Analytics", icon: FiBarChart2 },
       { to: "/dashboard/all-staff", label: "All Staff", icon: FiUsers },
       { to: "/dashboard/all-admins", label: "All Admins", icon: FiShield },
       { to: "/dashboard/register-staff", label: "Register Staff", icon: FiUserPlus },
@@ -24,7 +25,10 @@ function getNavLinks(adminData) {
   }
 
   if (zone && zone !== "SHQ" && zone === formation) {
-    links.push({ to: "/dashboard/zonal-staff", label: `${zone} Staff`, icon: FiMapPin });
+    links.push(
+      { to: "/dashboard/zonal-analytics", label: "Analytics", icon: FiBarChart2 },
+      { to: "/dashboard/zonal-staff", label: `${zone} Staff`, icon: FiMapPin },
+    );
   }
 
   if (formation && formation !== "SHQ" && formation !== zone) {

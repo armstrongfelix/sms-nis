@@ -13,6 +13,9 @@ import ZonalStaffDashboard from "../pages/ZonalHeadPages/ZonalStaffDashboard";
 import FormationStaffDashboard from "../pages/FormationHeadPage/FormationStaffDashboard";
 import RegistrationForm from "../components/forms/RegistrationForm";
 import AdminRegistrationForm from "../components/forms/AdminRegistrationForm";
+import StatsDebugPage from "../pages/StatsDebugPage";
+import StaffStrengthDashboard from "../pages/ServiceHeadPages/StaffStrengthDashboard";
+import ZonalStaffStrengthDashboard from "../pages/ZonalHeadPages/ZonalStaffStrengthDashboard";
 
 const router = createBrowserRouter([
   {
@@ -38,9 +41,12 @@ const router = createBrowserRouter([
           { path: "all-staff", element: <AllStaffDashboard /> },
           { path: "all-admins", element: <AllAdminsDashbord /> },
           { path: "zonal-staff", element: <ZonalStaffDashboard /> },
+          { path: "zonal-analytics", element: <ZonalStaffStrengthDashboard /> },
           { path: "formation-staff", element: <FormationStaffDashboard /> },
           { path: "register-staff", element: <RegistrationForm /> },
           { path: "register-admin", element: <AdminRegistrationForm /> },
+          { path: "stats-debug", element: <StatsDebugPage /> },
+          { path: "analytics", element: <StaffStrengthDashboard /> },
         ],
       },
     ],
