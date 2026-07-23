@@ -7,6 +7,7 @@ import StrengthByFormationChart from "../../components/dashboard/StrengthByForma
 import RankPyramidChart from "../../components/dashboard/RankPyramidChart";
 import SexDistributionChart from "../../components/dashboard/SexDistributionChart";
 import SexRatioByFormationChart from "../../components/dashboard/SexRatioByFormationChart";
+import StrengthByRankChart from "../../components/dashboard/StrengthByRankChart";
 import DashboardFilters from "../../components/dashboard/DashboardFilters";
 
 export default function ZonalStaffStrengthDashboard() {
@@ -72,6 +73,8 @@ export default function ZonalStaffStrengthDashboard() {
         zones={1}
         sexDist={stats.sexDist}
       />
+
+      <StrengthByRankChart data={stats.rankDist} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <StrengthByFormationChart

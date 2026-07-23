@@ -32,7 +32,10 @@ function getNavLinks(adminData) {
   }
 
   if (formation && formation !== "SHQ" && formation !== zone) {
-    links.push({ to: "/dashboard/formation-staff", label: `${formation} Staff`, icon: FiBriefcase });
+    links.push(
+      { to: "/dashboard/formation-analytics", label: "Analytics", icon: FiBarChart2 },
+      { to: "/dashboard/formation-staff", label: `${formation} Staff`, icon: FiBriefcase },
+    );
   }
 
   return links;
