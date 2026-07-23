@@ -100,8 +100,6 @@ export default function FormationStaffStrengthDashboard() {
 
       <KPICards
         total={stats.total}
-        formations={1}
-        zones={1}
         sexDist={stats.sexDist}
       />
 

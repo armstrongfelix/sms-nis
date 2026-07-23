@@ -8,35 +8,30 @@ export default function KPICards({ total, formations, zones, sexDist }) {
   const female = sexDist?.find(s => s.sex === "Female")?.count || 0;
   const totalSex = male + female || 1;
 
+  const cards = [
+    <StatCard key="total" label="Total Strength" value={total.toLocaleString()} bg="bg-nis-primary" />,
+  ];
+
+  if (formations != null) {
+    cards.push(
+      <StatCard key="formations" label="Formations" value={formations.toLocaleString()} bg="bg-nis-secondary" />,
+    );
+  }
+
+  if (zones != null) {
+    cards.push(
+      <StatCard key="zones" label="Zones" value={zones.toLocaleString()} bg="bg-nis-primary/80" />,
+    );
+  }
+
+  cards.push(
+    <SexCard key="male" label="Male" count={male} percent={Math.round((male / totalSex) * 100)} colors={SEX_COLORS.Male} />,
+    <SexCard key="female" label="Female" count={female} percent={Math.round((female / totalSex) * 100)} colors={SEX_COLORS.Female} />,
+  );
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-      <StatCard
-        label="Total Strength"
-        value={total.toLocaleString()}
-        bg="bg-nis-primary"
-      />
-      <StatCard
-        label="Formations"
-        value={formations.toLocaleString()}
-        bg="bg-nis-secondary"
-      />
-      <StatCard
-        label="Zones"
-        value={zones.toLocaleString()}
-        bg="bg-nis-primary/80"
-      />
-      <SexCard
-        label="Male"
-        count={male}
-        percent={Math.round((male / totalSex) * 100)}
-        colors={SEX_COLORS.Male}
-      />
-      <SexCard
-        label="Female"
-        count={female}
-        percent={Math.round((female / totalSex) * 100)}
-        colors={SEX_COLORS.Female}
-      />
+      {cards}
     </div>
   );
 }

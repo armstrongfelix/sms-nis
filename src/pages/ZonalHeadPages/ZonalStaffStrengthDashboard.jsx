@@ -56,7 +56,7 @@ export default function ZonalStaffStrengthDashboard() {
           {adminData?.zone} — Staff Strength Analytics
         </h1>
         <p className="text-xs text-gray-400 mt-1">
-          {stats.total} staff in {stats.byFormation.length} formations
+          {stats.total} staff
         </p>
       </div>
 
@@ -69,8 +69,6 @@ export default function ZonalStaffStrengthDashboard() {
 
       <KPICards
         total={stats.total}
-        formations={stats.byFormation.length}
-        zones={1}
         sexDist={stats.sexDist}
       />
 
