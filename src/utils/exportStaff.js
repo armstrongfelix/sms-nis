@@ -1,6 +1,6 @@
 import * as XLSX from "xlsx";
-import jsPDF from "jspdf";
-import "jspdf-autotable";
+import { jsPDF } from "jspdf";
+import { autoTable } from "jspdf-autotable";
 
 const COLUMNS = [
   { key: "surname", label: "Surname" },
@@ -58,7 +58,7 @@ export function exportToCSV(staff, filename = "staff") {
 export function exportToPDF(staff, filename = "staff") {
   const data = mapStaff(staff);
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
-  doc.autoTable({
+  autoTable(doc, {
     columns: COLUMNS.map((c) => ({ header: c.label, dataKey: c.key })),
     body: data,
     styles: { fontSize: 6, cellPadding: 1.5 },
