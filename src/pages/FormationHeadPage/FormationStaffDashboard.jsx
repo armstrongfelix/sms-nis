@@ -3,6 +3,7 @@ import { FiEdit2, FiX } from "react-icons/fi"
 import useFormationStaffStore from "../../stores/formation-store/formationStaffStore"
 import LoadingSpinner from "../../components/spiner/LoadingSpinner"
 import { RANKS, ZONES } from "../../selectors/staffStats"
+import ExportButtons from "../../components/export/ExportButtons"
 
 const ZONE_FORMATIONS = {
   SHQ: ["SHQ", "FCSC"],
@@ -87,7 +88,10 @@ export default function FormationStaffDashboard() {
 
   return (
     <div className="p-6 space-y-4">
-      <h1 className="text-2xl font-bold text-nis-primary">Formation Staff</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-nis-primary">Formation Staff</h1>
+        <ExportButtons data={allStaff} filename="formation-staff" />
+      </div>
 
       <input
         type="text"
