@@ -29,6 +29,7 @@ function getNavLinks(adminData) {
     links.push(
       { to: "/dashboard/zonal-analytics", label: "Analytics", icon: FiBarChart2 },
       { to: "/dashboard/zonal-staff", label: `${zone} Staff`, icon: FiMapPin },
+      { to: "/dashboard/zonal-deployment", label: "Deployment", icon: FiSend },
     );
   }
 
