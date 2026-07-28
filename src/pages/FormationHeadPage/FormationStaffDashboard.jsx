@@ -2,8 +2,9 @@ import { useEffect, useState } from "react"
 import { FiEdit2, FiX } from "react-icons/fi"
 import useFormationStaffStore from "../../stores/formation-store/formationStaffStore"
 import LoadingSpinner from "../../components/spiner/LoadingSpinner"
-import { RANKS, ZONES } from "../../selectors/staffStats"
+import { RANKS, ZONES, getRankLevel } from "../../selectors/staffStats"
 import ExportButtons from "../../components/export/ExportButtons"
+import StaffDetailDialog from "../../components/dashboard/StaffDetailDialog"
 
 const ZONE_FORMATIONS = {
   SHQ: ["SHQ", "FCSC"],
@@ -42,6 +43,7 @@ const FIELDS = [
 export default function FormationStaffDashboard() {
   const { allStaff, fetchAllStaff, updateStaff, loading } = useFormationStaffStore()
   const [editing, setEditing] = useState(null)
+  const [selectedStaff, setSelectedStaff] = useState(null)
   const [form, setForm] = useState({})
   const [search, setSearch] = useState("")
 
@@ -57,6 +59,10 @@ export default function FormationStaffDashboard() {
   function closeEdit() {
     setEditing(null)
     setForm({})
+  }
+
+  function closeDetail() {
+    setSelectedStaff(null)
   }
 
   async function handleEditSubmit(e) {
@@ -75,6 +81,12 @@ export default function FormationStaffDashboard() {
     const q = search.toLowerCase()
     const fields = [s.surname, s.firstName, s.middleName, s.serviceNumber, s.rank, s.formation, s.zone, s.gender, s.phoneNumber, s.email, s.stateOfOrigin, s.lgaOfOrigin, s.dateOfBirth, s.dateOfFirstAppointment, s.nin, s.bvn, s.nhf, s.permanentAddress]
     return fields.some((v) => v && v.toLowerCase().includes(q))
+  })
+
+  const sortedStaff = [...filteredStaff].sort((a, b) => {
+    const rankDiff = getRankLevel(b.rank) - getRankLevel(a.rank);
+    if (rankDiff !== 0) return rankDiff;
+    return a.serviceNumber.localeCompare(b.serviceNumber);
   })
 
   const selectedZone = form.zone
@@ -98,16 +110,16 @@ export default function FormationStaffDashboard() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search by name, service no, rank, formation, etc..."
-        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary"
+        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary"
       />
 
-      <div className="overflow-auto max-h-[calc(100vh-140px)] rounded-xl border border-gray-200 shadow-sm">
-        <table className="w-full text-sm text-left bg-white">
-          <thead className="sticky top-0 z-30 bg-white text-nis-primary font-semibold">
+      <div className="overflow-auto max-h-[calc(100vh-140px)] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+        <table className="w-full text-sm text-left bg-white dark:bg-gray-900">
+          <thead className="sticky top-0 z-30 bg-white dark:bg-gray-900 text-nis-primary font-semibold">
             <tr>
-              <th className="px-4 py-3 sticky left-0 top-0 z-20 bg-white min-w-[50px]">S/N</th>
-              <th className="px-4 py-3 w-10 sticky left-[50px] top-0 z-20 bg-white" />
-              <th className="px-4 py-3 whitespace-nowrap sticky left-[90px] top-0 z-20 bg-white min-w-[120px]">Surname</th>
+              <th className="px-4 py-3 sticky left-0 top-0 z-20 bg-white dark:bg-gray-900 min-w-[50px]">S/N</th>
+              <th className="px-4 py-3 w-10 sticky left-[50px] top-0 z-20 bg-white dark:bg-gray-900" />
+              <th className="px-4 py-3 whitespace-nowrap sticky left-[90px] top-0 z-20 bg-white dark:bg-gray-900 min-w-[120px]">Surname</th>
               <th className="px-4 py-3 whitespace-nowrap">First Name</th>
               <th className="px-4 py-3 whitespace-nowrap">Middle Name</th>
               <th className="px-4 py-3 whitespace-nowrap">Service No</th>
@@ -132,7 +144,7 @@ export default function FormationStaffDashboard() {
           <tbody className="divide-y divide-gray-100">
             {loading ? (
               <tr>
-                <td colSpan={20} className="px-4 py-12 text-center">
+                <td colSpan={20} className="px-4 py-12 text-center dark:text-white">
                   <LoadingSpinner size="lg" />
                 </td>
               </tr>
@@ -140,7 +152,7 @@ export default function FormationStaffDashboard() {
               <tr>
                 <td
                   colSpan={20}
-                  className="px-4 py-8 text-center text-gray-400"
+                  className="px-4 py-8 text-center text-gray-400 dark:text-gray-500 dark:text-white"
                 >
                   {allStaff.length === 0
                     ? "No staff records found for your formation."
@@ -148,47 +160,51 @@ export default function FormationStaffDashboard() {
                 </td>
               </tr>
             ) : (
-              filteredStaff.map((s, i) => (
-                <tr key={s.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-2.5 sticky left-0 z-20 bg-white min-w-[50px]">{i + 1}</td>
-                  <td className="px-4 py-2.5 sticky left-[50px] z-20 bg-white">
+              sortedStaff.map((s, i) => (
+                <tr
+                  key={s.id}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer"
+                  onClick={() => setSelectedStaff(s)}
+                >
+                  <td className="px-4 py-2.5 sticky left-0 z-20 bg-white dark:bg-gray-900 min-w-[50px] dark:text-white">{i + 1}</td>
+                  <td className="px-4 py-2.5 sticky left-[50px] z-20 bg-white dark:bg-gray-900 dark:text-white">
                     <button
-                      onClick={() => openEdit(s)}
+                      onClick={(e) => { e.stopPropagation(); openEdit(s) }}
                       className="hover:text-nis-tertiary text-nis-secondary active:text-nis-primary transition-colors"
                       title="Edit staff"
                     >
                       <FiEdit2 size={16} />
                     </button>
                   </td>
-                  <td className="px-4 py-2.5 whitespace-nowrap sticky left-[90px] z-20 bg-white min-w-[120px]">{s.surname}</td>
-                  <td className="px-4 py-2.5 whitespace-nowrap">{s.firstName}</td>
-                  <td className="px-4 py-2.5 whitespace-nowrap">{s.middleName}</td>
-                  <td className="px-4 py-2.5">{s.serviceNumber}</td>
-                  <td className="px-4 py-2.5">{s.rank}</td>
-                  <td className="px-4 py-2.5">{s.formation}</td>
-                  <td className="px-4 py-2.5">{s.zone}</td>
-                  <td className="px-4 py-2.5">{s.gender}</td>
-                  <td className="px-4 py-2.5 whitespace-nowrap">
+                  <td className="px-4 py-2.5 whitespace-nowrap sticky left-[90px] z-20 bg-white dark:bg-gray-900 min-w-[120px] dark:text-white">{s.surname}</td>
+                  <td className="px-4 py-2.5 whitespace-nowrap dark:text-white">{s.firstName}</td>
+                  <td className="px-4 py-2.5 whitespace-nowrap dark:text-white">{s.middleName}</td>
+                  <td className="px-4 py-2.5 dark:text-white">{s.serviceNumber}</td>
+                  <td className="px-4 py-2.5 dark:text-white">{s.rank}</td>
+                  <td className="px-4 py-2.5 dark:text-white">{s.formation}</td>
+                  <td className="px-4 py-2.5 dark:text-white">{s.zone}</td>
+                  <td className="px-4 py-2.5 dark:text-white">{s.gender}</td>
+                  <td className="px-4 py-2.5 whitespace-nowrap dark:text-white">
                     {s.phoneNumber}
                   </td>
-                  <td className="px-4 py-2.5">{s.email}</td>
-                  <td className="px-4 py-2.5 whitespace-nowrap">
+                  <td className="px-4 py-2.5 dark:text-white">{s.email}</td>
+                  <td className="px-4 py-2.5 whitespace-nowrap dark:text-white">
                     {s.stateOfOrigin}
                   </td>
-                  <td className="px-4 py-2.5 whitespace-nowrap">
+                  <td className="px-4 py-2.5 whitespace-nowrap dark:text-white">
                     {s.lgaOfOrigin}
                   </td>
-                  <td className="px-4 py-2.5 whitespace-nowrap">
+                  <td className="px-4 py-2.5 whitespace-nowrap dark:text-white">
                     {s.dateOfBirth}
                   </td>
-                  <td className="px-4 py-2.5 whitespace-nowrap">
+                  <td className="px-4 py-2.5 whitespace-nowrap dark:text-white">
                     {s.dateOfFirstAppointment}
                   </td>
-                  <td className="px-4 py-2.5">{s.nin}</td>
-                  <td className="px-4 py-2.5">{s.bvn}</td>
-                  <td className="px-4 py-2.5">{s.nhf}</td>
+                  <td className="px-4 py-2.5 dark:text-white">{s.nin}</td>
+                  <td className="px-4 py-2.5 dark:text-white">{s.bvn}</td>
+                  <td className="px-4 py-2.5 dark:text-white">{s.nhf}</td>
                   <td
-                    className="px-4 py-2.5 max-w-xs truncate"
+                    className="px-4 py-2.5 max-w-xs truncate dark:text-white"
                     title={s.permanentAddress}
                   >
                     {s.permanentAddress}
@@ -206,12 +222,12 @@ export default function FormationStaffDashboard() {
           onClick={closeEdit}
         >
           <div
-            className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-6 relative"
+            className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-6 relative"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={closeEdit}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors"
+              className="absolute top-4 right-4 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
             >
               <FiX size={20} />
             </button>
@@ -235,7 +251,7 @@ export default function FormationStaffDashboard() {
                         id={f.id}
                         value={form[f.id] || ""}
                         onChange={(e) => setValue(f.id, e.target.value)}
-                        className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary bg-white"
+                        className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary bg-white dark:bg-gray-800"
                       >
                         <option value="">Select rank</option>
                         {RANKS.map((r) => (
@@ -247,7 +263,7 @@ export default function FormationStaffDashboard() {
                         id={f.id}
                         value={form[f.id] || ""}
                         onChange={(e) => setValue(f.id, e.target.value)}
-                        className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary bg-white"
+                        className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary bg-white dark:bg-gray-800"
                       >
                         <option value="">Select zone</option>
                         {ZONES.map((z) => (
@@ -259,7 +275,7 @@ export default function FormationStaffDashboard() {
                         id={f.id}
                         value={form[f.id] || ""}
                         onChange={(e) => setValue(f.id, e.target.value)}
-                        className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary bg-white"
+                        className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary bg-white dark:bg-gray-800"
                       >
                         <option value="">
                           {selectedZone ? "Select formation" : "Select a zone first"}
@@ -274,7 +290,7 @@ export default function FormationStaffDashboard() {
                         type={f.type}
                         value={form[f.id] || ""}
                         onChange={(e) => setValue(f.id, e.target.value)}
-                        className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary"
+                        className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary"
                       />
                     )}
                   </div>
@@ -285,7 +301,7 @@ export default function FormationStaffDashboard() {
                 <button
                   type="button"
                   onClick={closeEdit}
-                  className="px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
                 >
                   Cancel
                 </button>
@@ -299,6 +315,10 @@ export default function FormationStaffDashboard() {
             </form>
           </div>
         </div>
+      )}
+
+      {selectedStaff && (
+        <StaffDetailDialog staff={selectedStaff} onClose={closeDetail} />
       )}
     </div>
   );

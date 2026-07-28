@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { useTheme } from "../../contexts/ThemeContext";
 import {
   FiGrid, FiUsers, FiShield, FiUserPlus, FiUserCheck,
   FiMapPin, FiBriefcase, FiBarChart2, FiLogOut, FiMenu, FiX, FiSend,
+  FiSun, FiMoon, FiMonitor,
 } from "react-icons/fi";
 
 function getNavLinks(adminData) {
@@ -45,21 +47,28 @@ function getNavLinks(adminData) {
 
 export default function SideBar() {
   const { adminData, logout } = useAuth();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const navLinks = getNavLinks(adminData);
 
+  const themeOptions = [
+    { value: "light", label: "Light", icon: FiSun },
+    { value: "dark", label: "Dark", icon: FiMoon },
+    { value: "system", label: "System", icon: FiMonitor },
+  ];
+
   const navContent = (
     <div className="flex flex-col h-full">
-      <div className="p-5 border-b border-gray-200">
+      <div className="p-5 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-nis-secondary/10 flex items-center justify-center overflow-hidden">
+          <div className="w-10 h-10 rounded-full bg-nis-secondary/10 dark:bg-nis-secondary/20 flex items-center justify-center overflow-hidden">
             <img src="/src/assets/images/nis-logo.png" alt="NIS" className="w-8 h-8 object-contain" />
           </div>
           <div className="min-w-0">
             <p className="text-sm font-bold text-nis-primary truncate">
               {adminData?.email?.split("@")[0] || "Admin"}
             </p>
-            <p className="text-xs text-gray-400 truncate capitalize">
+            <p className="text-xs text-gray-400 dark:text-gray-500 truncate capitalize">
               {adminData?.role?.toLowerCase() || "Administrator"}
             </p>
           </div>
@@ -77,8 +86,8 @@ export default function SideBar() {
               [
                 "flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-colors",
                 isActive
-                  ? "bg-nis-primary/10 text-nis-primary font-semibold"
-                  : "text-gray-600 hover:bg-gray-100",
+                  ? "bg-nis-primary/10 dark:bg-nis-primary/20 text-nis-primary font-semibold"
+                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800",
               ].join(" ")
             }
           >
@@ -88,10 +97,38 @@ export default function SideBar() {
         ))}
       </nav>
 
-      <div className="p-3 border-t border-gray-200">
+      <div className="p-3 border-t border-gray-200 dark:border-gray-700 space-y-1">
+        <p className="px-4 py-1 text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+          Theme
+        </p>
+        <div className="flex gap-1">
+          {themeOptions.map((opt) => {
+            const active = theme === opt.value;
+            const Icon = opt.icon;
+            return (
+              <button
+                key={opt.value}
+                onClick={() => setTheme(opt.value)}
+                title={opt.label}
+                className={[
+                  "flex items-center justify-center flex-1 gap-1.5 px-2 py-2 rounded-lg text-xs transition-colors cursor-pointer",
+                  active
+                    ? "bg-nis-primary/10 dark:bg-nis-primary/20 text-nis-primary font-semibold"
+                    : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800",
+                ].join(" ")}
+              >
+                <Icon size={14} />
+                <span className="hidden sm:inline">{opt.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="p-3 border-t border-gray-200 dark:border-gray-700">
         <button
           onClick={logout}
-          className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-gray-100 w-full transition-colors cursor-pointer"
+          className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 w-full transition-colors cursor-pointer"
         >
           <FiLogOut size={18} />
           Logout
@@ -104,7 +141,7 @@ export default function SideBar() {
     <>
       <button
         onClick={() => setMobileOpen((prev) => !prev)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-md border border-gray-200 text-nis-primary cursor-pointer"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white dark:bg-gray-900 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 text-nis-primary cursor-pointer"
       >
         {mobileOpen ? <FiX size={20} /> : <FiMenu size={20} />}
       </button>
@@ -118,7 +155,7 @@ export default function SideBar() {
 
       <aside
         className={[
-          "w-64 bg-white border-r border-gray-200 flex flex-col shrink-0 h-screen",
+          "w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col shrink-0 h-screen",
           "fixed lg:sticky top-0 z-40",
           "transition-transform duration-300 lg:transition-none",
           mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",

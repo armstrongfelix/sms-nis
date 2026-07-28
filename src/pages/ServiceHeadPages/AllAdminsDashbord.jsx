@@ -73,13 +73,13 @@ export default function AllAdminsDashbord() {
           <tbody className="divide-y divide-gray-100">
             {loading ? (
               <tr>
-                <td colSpan={5} className="px-4 py-12 text-center">
+                <td colSpan={5} className="px-4 py-12 text-center dark:text-white">
                   <LoadingSpinner size="lg" />
                 </td>
               </tr>
             ) : filteredAdmins.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={5} className="px-4 py-8 text-center text-gray-400 dark:text-white">
                   {allAdmins.length === 0
                     ? "No admin records found."
                     : "No records match your search."}
@@ -92,11 +92,11 @@ export default function AllAdminsDashbord() {
                   onClick={() => setSelected(a)}
                   className="hover:bg-gray-50 transition-colors cursor-pointer"
                 >
-                  <td className="px-4 py-2.5 sticky left-0 z-20 bg-white">{i + 1}</td>
-                  <td className="px-4 py-2.5">{a.zone}</td>
-                  <td className="px-4 py-2.5">{a.formation}</td>
-                  <td className="px-4 py-2.5">{a.role}</td>
-                  <td className="px-4 py-2.5">{a.email}</td>
+                  <td className="px-4 py-2.5 sticky left-0 z-20 bg-white dark:text-white">{i + 1}</td>
+                  <td className="px-4 py-2.5 dark:text-white">{a.zone}</td>
+                  <td className="px-4 py-2.5 dark:text-white">{a.formation}</td>
+                  <td className="px-4 py-2.5 dark:text-white">{a.role}</td>
+                  <td className="px-4 py-2.5 dark:text-white">{a.email}</td>
                 </tr>
               ))
             )}

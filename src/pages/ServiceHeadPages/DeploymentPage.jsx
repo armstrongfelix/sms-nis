@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { FiSend, FiX, FiCheck, FiChevronDown } from "react-icons/fi";
 import useAllStaffStore from "../../stores/shq-store/allStaffStore";
 import LoadingSpinner from "../../components/spiner/LoadingSpinner";
-import { ZONES } from "../../selectors/staffStats";
+import { ZONES, getRankLevel } from "../../selectors/staffStats";
 
 const ZONE_FORMATIONS = {
   SHQ: ["SHQ", "FCSC"],
@@ -43,6 +43,12 @@ export default function DeploymentPage() {
     const q = search.toLowerCase();
     return [s.surname, s.firstName, s.middleName, s.serviceNumber, s.rank, s.formation, s.zone]
       .some((v) => v && v.toLowerCase().includes(q));
+  });
+
+  const sortedStaff = [...filteredStaff].sort((a, b) => {
+    const rankDiff = getRankLevel(b.rank) - getRankLevel(a.rank);
+    if (rankDiff !== 0) return rankDiff;
+    return a.serviceNumber.localeCompare(b.serviceNumber);
   });
 
   const allFilteredSelected = filteredStaff.length > 0 && selectedIds.size === filteredStaff.length;
@@ -128,19 +134,19 @@ export default function DeploymentPage() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search by name, service no, rank, formation..."
-        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary"
+        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary"
       />
 
-      <div className="overflow-auto max-h-[calc(100vh-140px)] rounded-xl border border-gray-200 shadow-sm">
-        <table className="w-full text-sm text-left bg-white">
-          <thead className="sticky top-0 z-30 bg-white text-nis-primary font-semibold">
+      <div className="overflow-auto max-h-[calc(100vh-140px)] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+        <table className="w-full text-sm text-left bg-white dark:bg-gray-900">
+          <thead className="sticky top-0 z-30 bg-white dark:bg-gray-900 text-nis-primary font-semibold">
             <tr>
               <th className="px-4 py-3 w-10">
                 <input
                   type="checkbox"
                   checked={allFilteredSelected}
                   onChange={toggleSelectAll}
-                  className="w-4 h-4 rounded border-gray-300 text-nis-primary focus:ring-nis-primary cursor-pointer"
+                  className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-nis-primary focus:ring-nis-primary cursor-pointer"
                 />
               </th>
               <th className="px-4 py-3 whitespace-nowrap">S/N</th>
@@ -156,39 +162,39 @@ export default function DeploymentPage() {
           <tbody className="divide-y divide-gray-100">
             {loading ? (
               <tr>
-                <td colSpan={9} className="px-4 py-12 text-center">
+                <td colSpan={9} className="px-4 py-12 text-center dark:text-white">
                   <LoadingSpinner size="lg" />
                 </td>
               </tr>
             ) : filteredStaff.length === 0 ? (
               <tr>
-                <td colSpan={9} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={9} className="px-4 py-8 text-center text-gray-400 dark:text-gray-500 dark:text-white">
                   {allStaff.length === 0 ? "No staff records found." : "No records match your search."}
                 </td>
               </tr>
             ) : (
-              filteredStaff.map((s, i) => (
-                <tr key={s.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-2.5">
+              sortedStaff.map((s, i) => (
+                <tr key={s.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                  <td className="px-4 py-2.5 dark:text-white">
                     <input
                       type="checkbox"
                       checked={selectedIds.has(s.id)}
                       onChange={() => toggleSelect(s.id)}
-                      className="w-4 h-4 rounded border-gray-300 text-nis-primary focus:ring-nis-primary cursor-pointer"
+                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-nis-primary focus:ring-nis-primary cursor-pointer"
                     />
                   </td>
-                  <td className="px-4 py-2.5">{i + 1}</td>
-                  <td className="px-4 py-2.5 whitespace-nowrap">{s.surname}</td>
-                  <td className="px-4 py-2.5 whitespace-nowrap">{s.firstName}</td>
-                  <td className="px-4 py-2.5">{s.serviceNumber}</td>
-                  <td className="px-4 py-2.5">{s.rank}</td>
-                  <td className="px-4 py-2.5">
+                  <td className="px-4 py-2.5 dark:text-white">{i + 1}</td>
+                  <td className="px-4 py-2.5 whitespace-nowrap dark:text-white">{s.surname}</td>
+                  <td className="px-4 py-2.5 whitespace-nowrap dark:text-white">{s.firstName}</td>
+                  <td className="px-4 py-2.5 dark:text-white">{s.serviceNumber}</td>
+                  <td className="px-4 py-2.5 dark:text-white">{s.rank}</td>
+                  <td className="px-4 py-2.5 dark:text-white">
                     <span className="inline-block px-2 py-0.5 rounded-full bg-nis-secondary/10 text-nis-secondary text-xs font-medium">
                       {s.formation}
                     </span>
                   </td>
-                  <td className="px-4 py-2.5">{s.zone}</td>
-                  <td className="px-4 py-2.5">{s.gender}</td>
+                  <td className="px-4 py-2.5 dark:text-white">{s.zone}</td>
+                  <td className="px-4 py-2.5 dark:text-white">{s.gender}</td>
                 </tr>
               ))
             )}
@@ -202,26 +208,26 @@ export default function DeploymentPage() {
           onClick={() => !posting && setShowPostModal(false)}
         >
           <div
-            className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 relative"
+            className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 relative"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => !posting && (setShowPostModal(false), setTargetFormation(""))}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
+              className="absolute top-4 right-4 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors cursor-pointer"
               disabled={posting}
             >
               <FiX size={20} />
             </button>
 
             <h2 className="text-xl font-bold text-nis-primary mb-1">Deploy Staff</h2>
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
               {selectedIds.size} staff selected for deployment
             </p>
 
             {selectedStaff.length > 0 && (
-              <div className="mb-4 max-h-32 overflow-y-auto bg-gray-50 rounded-lg p-3 space-y-1">
+              <div className="mb-4 max-h-32 overflow-y-auto bg-gray-50 dark:bg-gray-800 rounded-lg p-3 space-y-1">
                 {selectedStaff.map((s) => (
-                  <div key={s.id} className="text-xs text-gray-600 flex items-center gap-2">
+                  <div key={s.id} className="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-nis-secondary shrink-0" />
                     {s.surname} {s.firstName} — {s.serviceNumber} ({s.formation})
                   </div>
@@ -239,14 +245,14 @@ export default function DeploymentPage() {
                     id="targetZone"
                     value={targetZone}
                     onChange={(e) => setTargetZone(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-lg border border-gray-300 text-sm appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary pr-10"
+                    className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 text-sm appearance-none bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary pr-10"
                   >
                     <option value="">Select zone...</option>
                     {ZONES.map((z) => (
                       <option key={z} value={z}>{z}</option>
                     ))}
                   </select>
-                  <FiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                  <FiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none" size={16} />
                 </div>
               </div>
 
@@ -259,7 +265,7 @@ export default function DeploymentPage() {
                     id="targetFormation"
                     value={targetFormation}
                     onChange={(e) => setTargetFormation(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-lg border border-gray-300 text-sm appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary pr-10"
+                    className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 text-sm appearance-none bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary pr-10"
                   >
                     <option value="">
                       {targetZone ? "Select formation..." : "Select a zone first"}
@@ -268,7 +274,7 @@ export default function DeploymentPage() {
                       <option key={f} value={f}>{f}</option>
                     ))}
                   </select>
-                  <FiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                  <FiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none" size={16} />
                 </div>
               </div>
             </div>
@@ -278,7 +284,7 @@ export default function DeploymentPage() {
                 type="button"
                 onClick={() => (setShowPostModal(false), setTargetZone(""), setTargetFormation(""))}
                 disabled={posting}
-                className="px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50"
+                className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer disabled:opacity-50"
               >
                 Cancel
               </button>

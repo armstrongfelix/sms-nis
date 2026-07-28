@@ -53,9 +53,9 @@ export default function ZonalTest() {
             <tbody className="divide-y divide-gray-100">
               {staff.map((s, i) => (
                 <tr key={s.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-2.5">{i + 1}</td>
+                  <td className="px-4 py-2.5 dark:text-white">{i + 1}</td>
                   {allKeys.map((key) => (
-                    <td key={key} className="px-4 py-2.5 whitespace-nowrap max-w-xs truncate" title={s[key]}>
+                    <td key={key} className="px-4 py-2.5 whitespace-nowrap max-w-xs truncate dark:text-white" title={s[key]}>
                       {s[key]}
                     </td>
                   ))}

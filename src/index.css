@@ -1,11 +1,21 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
-    --color-nis-primary: #463032;
-    --color-nis-secondary: #006636;
-    --color-nis-tertiary: #F8CB9C;
-    --color-nis-primary-light: #5a3e40;
-    --color-nis-secondary-light: #008845;
-    --color-nis-tertiary-dark: #e6b47a;
-  }
-  
+  --color-nis-primary: #463032;
+  --color-nis-secondary: #006636;
+  --color-nis-tertiary: #F8CB9C;
+  --color-nis-primary-light: #5a3e40;
+  --color-nis-secondary-light: #008845;
+  --color-nis-tertiary-dark: #e6b47a;
+}
+
+.dark {
+  --color-nis-primary: #E8D5D5;
+  --color-nis-secondary: #4ADE80;
+  --color-nis-tertiary: #2D2018;
+  --color-nis-primary-light: #D4B8B8;
+  --color-nis-secondary-light: #22C55E;
+  --color-nis-tertiary-dark: #3D2D22;
+}
