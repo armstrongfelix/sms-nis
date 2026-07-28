@@ -17,6 +17,7 @@ import StatsDebugPage from "../pages/StatsDebugPage";
 import StaffStrengthDashboard from "../pages/ServiceHeadPages/StaffStrengthDashboard";
 import ZonalStaffStrengthDashboard from "../pages/ZonalHeadPages/ZonalStaffStrengthDashboard";
 import FormationStaffStrengthDashboard from "../pages/FormationHeadPage/FormationStaffStrengthDashboard";
+import DeploymentPage from "../pages/ServiceHeadPages/DeploymentPage";
 
 const router = createBrowserRouter([
   {
@@ -49,6 +50,7 @@ const router = createBrowserRouter([
           { path: "register-admin", element: <AdminRegistrationForm /> },
           { path: "stats-debug", element: <StatsDebugPage /> },
           { path: "analytics", element: <StaffStrengthDashboard /> },
+          { path: "deployment", element: <DeploymentPage /> },
         ],
       },
     ],

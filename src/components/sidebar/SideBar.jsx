@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import {
   FiGrid, FiUsers, FiShield, FiUserPlus, FiUserCheck,
-  FiMapPin, FiBriefcase, FiBarChart2, FiLogOut, FiMenu, FiX,
+  FiMapPin, FiBriefcase, FiBarChart2, FiLogOut, FiMenu, FiX, FiSend,
 } from "react-icons/fi";
 
 function getNavLinks(adminData) {
@@ -21,6 +21,7 @@ function getNavLinks(adminData) {
       { to: "/dashboard/all-admins", label: "All Admins", icon: FiShield },
       { to: "/dashboard/register-staff", label: "Register Staff", icon: FiUserPlus },
       { to: "/dashboard/register-admin", label: "Register Admin", icon: FiUserCheck },
+      { to: "/dashboard/deployment", label: "Deployment", icon: FiSend },
     );
   }
 
