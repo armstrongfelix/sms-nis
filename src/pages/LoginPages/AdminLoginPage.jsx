@@ -99,7 +99,7 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-nis-primary to-nis-primary-light flex items-center justify-center p-6">
+    <div className="force-light min-h-screen bg-gradient-to-br from-nis-primary to-nis-primary-light flex items-center justify-center p-6">
       <div className="bg-white rounded-2xl shadow-2xl p-10 md:p-14 max-w-md w-full gap-4">
         <button
           onClick={() => navigate("/")}

@@ -19,3 +19,12 @@
   --color-nis-secondary-light: #22C55E;
   --color-nis-tertiary-dark: #3D2D22;
 }
+
+.force-light {
+  --color-nis-primary: #463032;
+  --color-nis-secondary: #006636;
+  --color-nis-tertiary: #F8CB9C;
+  --color-nis-primary-light: #5a3e40;
+  --color-nis-secondary-light: #008845;
+  --color-nis-tertiary-dark: #e6b47a;
+}

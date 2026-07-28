@@ -3,7 +3,7 @@ import { FiShield, FiUsers } from "react-icons/fi";
 
 export default function WelcomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-nis-primary to-nis-primary-light flex items-center justify-center p-6">
+    <div className="force-light min-h-screen bg-gradient-to-br from-nis-primary to-nis-primary-light flex items-center justify-center p-6">
       <div className="bg-white rounded-2xl shadow-2xl p-10 md:p-14 max-w-lg w-full text-center space-y-8">
         <div className="space-y-2 gap-4">
           <div className="w-30 h-30 bg-white rounded-full flex items-center justify-center mx-auto">

@@ -22,7 +22,7 @@ export default function StaffLoginPage() {
   if (staffData) {
     const s = staffData;
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="force-light min-h-screen bg-gray-50">
         <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4 flex items-center justify-between">
           <h1 className="text-lg font-bold text-nis-primary">
             {s.title} {s.surname} {s.firstName}
@@ -80,7 +80,7 @@ export default function StaffLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-nis-primary to-nis-primary-light flex items-center justify-center p-6">
+    <div className="force-light min-h-screen bg-gradient-to-br from-nis-primary to-nis-primary-light flex items-center justify-center p-6">
       <div className="bg-white rounded-2xl shadow-2xl p-10 md:p-14 max-w-md w-full">
         <button
           onClick={() => navigate("/")}
