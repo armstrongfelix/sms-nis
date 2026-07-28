@@ -63,7 +63,7 @@ export default function StaffStrengthDashboard() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 p-2">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
           <h1 className="text-xl font-bold text-nis-primary">
@@ -90,7 +90,7 @@ export default function StaffStrengthDashboard() {
         sexDist={stats.sexDist}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-10 mt-10">
         <StrengthByZoneChart
           data={stats.byZone}
           onZoneClick={handleZoneClick}
@@ -102,7 +102,7 @@ export default function StaffStrengthDashboard() {
         <RankPyramidChart data={stats.rankBySex} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-10">
         <SexDistributionChart data={stats.sexDist} />
         <SexRatioByFormationChart data={stats.sexRatioByFormation} />
       </div>

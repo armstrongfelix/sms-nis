@@ -50,7 +50,7 @@ export default function ZonalStaffStrengthDashboard() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 p-2">
       <div>
         <h1 className="text-xl font-bold text-nis-primary">
           {adminData?.zone} — Staff Strength Analytics
@@ -74,7 +74,7 @@ export default function ZonalStaffStrengthDashboard() {
 
       <StrengthByRankChart data={stats.rankDist} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-10 mt-10">
         <StrengthByFormationChart
           data={stats.byFormation}
           onFormationClick={handleFormationClick}
@@ -82,7 +82,7 @@ export default function ZonalStaffStrengthDashboard() {
         <RankPyramidChart data={stats.rankBySex} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-10">
         <SexDistributionChart data={stats.sexDist} />
         <SexRatioByFormationChart data={stats.sexRatioByFormation} />
       </div>

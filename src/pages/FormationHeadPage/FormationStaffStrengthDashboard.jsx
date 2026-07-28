@@ -16,9 +16,9 @@ const selectClass = [
 
 export default function FormationStaffStrengthDashboard() {
   const { adminData } = useAuth();
-  const staffList = useFormationStaffStore(s => s.staffList);
-  const loading = useFormationStaffStore(s => s.loading);
-  const fetchAllStaff = useFormationStaffStore(s => s.fetchAllStaff);
+  const staffList = useFormationStaffStore((s) => s.staffList);
+  const loading = useFormationStaffStore((s) => s.loading);
+  const fetchAllStaff = useFormationStaffStore((s) => s.fetchAllStaff);
 
   const fetched = useRef(false);
   useEffect(() => {
@@ -31,7 +31,7 @@ export default function FormationStaffStrengthDashboard() {
   const [filters, setFilters] = useState({ rank: "", sex: "" });
 
   const handleFilterChange = useCallback((key, value) => {
-    setFilters(prev => ({ ...prev, [key]: value || "" }));
+    setFilters((prev) => ({ ...prev, [key]: value || "" }));
   }, []);
 
   const clearFilters = useCallback(() => {
@@ -50,7 +50,7 @@ export default function FormationStaffStrengthDashboard() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 p-2">
       <div>
         <h1 className="text-xl font-bold text-nis-primary">
           {adminData?.formation} — Staff Strength Analytics
@@ -66,11 +66,13 @@ export default function FormationStaffStrengthDashboard() {
             <select
               className={selectClass}
               value={filters.rank}
-              onChange={e => handleFilterChange("rank", e.target.value)}
+              onChange={(e) => handleFilterChange("rank", e.target.value)}
             >
               <option value="">All Ranks</option>
-              {RANKS.map(r => (
-                <option key={r} value={r}>{r}</option>
+              {RANKS.map((r) => (
+                <option key={r} value={r}>
+                  {r}
+                </option>
               ))}
             </select>
           </FilterGroup>
@@ -79,7 +81,7 @@ export default function FormationStaffStrengthDashboard() {
             <select
               className={selectClass}
               value={filters.sex}
-              onChange={e => handleFilterChange("sex", e.target.value)}
+              onChange={(e) => handleFilterChange("sex", e.target.value)}
             >
               <option value="">All</option>
               <option value="Male">Male</option>
@@ -98,14 +100,11 @@ export default function FormationStaffStrengthDashboard() {
         </div>
       </div>
 
-      <KPICards
-        total={stats.total}
-        sexDist={stats.sexDist}
-      />
+      <KPICards total={stats.total} sexDist={stats.sexDist} />
 
       <StrengthByRankChart data={stats.rankDist} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 mt-10">
         <RankPyramidChart data={stats.rankBySex} />
         <SexDistributionChart data={stats.sexDist} />
       </div>
