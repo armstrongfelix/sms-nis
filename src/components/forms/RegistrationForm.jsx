@@ -30,63 +30,17 @@ const RANKS = [
   "CG",
 ];
 
-const FORMATIONS = [
-  "SHQ",
-  "ZONEA",
-  "ZONEB",
-  "ZONEC",
-  "ZONED",
-  "ZONEE",
-  "ZONEF",
-  "ZONEG",
-  "ZONEH",
-  "ABSC",
-  "ADSC",
-  "AKSC",
-  "ANSC",
-  "BASC",
-  "BESC",
-  "BOSC",
-  "BYSC",
-  "CRSC",
-  "DESC",
-  "EBSC",
-  "EDSC",
-  "EKSC",
-  "ENSC",
-  "FCSC",
-  "GOSC",
-  "IMSC",
-  "JISC",
-  "KDSC",
-  "KESC",
-  "KNSC",
-  "KOSC",
-  "KTSC",
-  "KWSC",
-  "LASC",
-  "NASC",
-  "NISC",
-  "OGSC",
-  "ONSC",
-  "OSSC",
-  "OYSC",
-  "PLSC",
-  "RISC",
-  "SOSC",
-  "TASC",
-  "YOSC",
-  "ZASC",
-  "NITSOL",
-  "NITSA",
-  "ITSK",
-  "MMIA",
-  "NAIA",
-  "NFBC",
-  "SEBC",
-  "IDBC",
-  "RVMC",
-];
+const ZONE_FORMATIONS = {
+  SHQ: ["SHQ", "FCSC"],
+  ZONEA: ["ZONEA", "LASC", "OGSC", "SEBC"],
+  ZONEB: ["ZONEB", "KDSC", "KNSC", "KOSC", "JISC", "SOSC", "ZASC", "KESC"],
+  ZONEC: ["ZONEC", "BASC", "YOSC", "BOSC", "GOSC", "ADSC", "TASC", "IDBC"],
+  ZONED: ["ZONED", "NISC", "KWSC", "KTSC", "FCSC"],
+  ZONEE: ["ZONEE", "IMSC", "ABSC", "ENSC", "EBSC", "ANSC", "NITSOL", "NITSA", "NFBC"],
+  ZONEF: ["ZONEF", "OYSC", "OSSC", "ONSC", "EKSC"],
+  ZONEG: ["ZONEG", "EDSC", "DESC", "BYSC", "RISC", "AKSC", "CRSC", "MMIA", "RVMC"],
+  ZONEH: ["ZONEH", "BESC", "PLSC", "NASC", "NAIA"],
+};
 
 const ZONES = [
   "SHQ",
@@ -343,6 +297,14 @@ export default function RegistrationForm() {
 
   const selectedState = formik.values.stateOfOrigin;
   const lgaOptions = selectedState ? getLgas(selectedState) : [];
+  const selectedZone = formik.values.zone;
+  const formationOptions = selectedZone ? ZONE_FORMATIONS[selectedZone] || [] : [];
+
+  useEffect(() => {
+    if (selectedZone && !formationOptions.includes(formik.values.formation)) {
+      formik.setFieldValue("formation", "");
+    }
+  }, [selectedZone]);
 
   return (
     <>
@@ -557,22 +519,22 @@ export default function RegistrationForm() {
             required
           />
           <Select
-            id="formation"
-            label="Formation"
+            id="zone"
+            label="Zone"
             formik={formik}
-            options={FORMATIONS}
-            placeholder="Select formation"
+            options={ZONES}
+            placeholder="Select zone"
             required
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Select
-            id="zone"
-            label="Zone"
+            id="formation"
+            label="Formation"
             formik={formik}
-            options={ZONES}
-            placeholder="Select zone"
+            options={formationOptions}
+            placeholder={selectedZone ? "Select formation" : "Select a zone first"}
             required
           />
           <Input

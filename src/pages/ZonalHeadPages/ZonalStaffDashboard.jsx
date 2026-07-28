@@ -2,6 +2,19 @@ import { useEffect, useState } from "react";
 import { FiEdit2, FiX } from "react-icons/fi";
 import useZonalStaffStore from "../../stores/zonal-store/zonalStaffStore";
 import LoadingSpinner from "../../components/spiner/LoadingSpinner";
+import { RANKS, ZONES } from "../../selectors/staffStats";
+
+const ZONE_FORMATIONS = {
+  SHQ: ["SHQ", "FCSC"],
+  ZONEA: ["ZONEA", "LASC", "OGSC", "SEBC"],
+  ZONEB: ["ZONEB", "KDSC", "KNSC", "KOSC", "JISC", "SOSC", "ZASC", "KESC"],
+  ZONEC: ["ZONEC", "BASC", "YOSC", "BOSC", "GOSC", "ADSC", "TASC", "IDBC"],
+  ZONED: ["ZONED", "NISC", "KWSC", "KTSC", "FCSC"],
+  ZONEE: ["ZONEE", "IMSC", "ABSC", "ENSC", "EBSC", "ANSC", "NITSOL", "NITSA", "NFBC"],
+  ZONEF: ["ZONEF", "OYSC", "OSSC", "ONSC", "EKSC"],
+  ZONEG: ["ZONEG", "EDSC", "DESC", "BYSC", "RISC", "AKSC", "CRSC", "MMIA", "RVMC"],
+  ZONEH: ["ZONEH", "BESC", "PLSC", "NASC", "NAIA"],
+};
 
 const FIELDS = [
   { id: "title", label: "Title", type: "text" },
@@ -12,8 +25,8 @@ const FIELDS = [
   { id: "dateOfBirth", label: "Date of Birth", type: "date" },
   { id: "serviceNumber", label: "Service Number", type: "text" },
   { id: "rank", label: "Rank", type: "text" },
-  { id: "formation", label: "Formation", type: "text" },
   { id: "zone", label: "Zone", type: "text" },
+  { id: "formation", label: "Formation", type: "text" },
   { id: "dateOfFirstAppointment", label: "Date of First Appt.", type: "date" },
   { id: "email", label: "Email", type: "email" },
   { id: "phoneNumber", label: "Phone", type: "text" },
@@ -80,6 +93,15 @@ export default function ZonalStaffDashboard() {
     ];
     return fields.some((v) => v && v.toLowerCase().includes(q));
   });
+
+  const selectedZone = form.zone;
+  const formationOptions = selectedZone ? ZONE_FORMATIONS[selectedZone] || [] : [];
+
+  useEffect(() => {
+    if (selectedZone && form.formation && !formationOptions.includes(form.formation)) {
+      setValue("formation", "");
+    }
+  }, [selectedZone]);
 
   return (
     <div className="p-6 space-y-4">
@@ -218,13 +240,53 @@ export default function ZonalStaffDashboard() {
                     >
                       {f.label}
                     </label>
-                    <input
-                      id={f.id}
-                      type={f.type}
-                      value={form[f.id] || ""}
-                      onChange={(e) => setValue(f.id, e.target.value)}
-                      className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary"
-                    />
+                    {f.id === "rank" ? (
+                      <select
+                        id={f.id}
+                        value={form[f.id] || ""}
+                        onChange={(e) => setValue(f.id, e.target.value)}
+                        className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary bg-white"
+                      >
+                        <option value="">Select rank</option>
+                        {RANKS.map((r) => (
+                          <option key={r} value={r}>{r}</option>
+                        ))}
+                      </select>
+                    ) : f.id === "zone" ? (
+                      <select
+                        id={f.id}
+                        value={form[f.id] || ""}
+                        onChange={(e) => setValue(f.id, e.target.value)}
+                        className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary bg-white"
+                      >
+                        <option value="">Select zone</option>
+                        {ZONES.map((z) => (
+                          <option key={z} value={z}>{z}</option>
+                        ))}
+                      </select>
+                    ) : f.id === "formation" ? (
+                      <select
+                        id={f.id}
+                        value={form[f.id] || ""}
+                        onChange={(e) => setValue(f.id, e.target.value)}
+                        className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary bg-white"
+                      >
+                        <option value="">
+                          {selectedZone ? "Select formation" : "Select a zone first"}
+                        </option>
+                        {formationOptions.map((fm) => (
+                          <option key={fm} value={fm}>{fm}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        id={f.id}
+                        type={f.type}
+                        value={form[f.id] || ""}
+                        onChange={(e) => setValue(f.id, e.target.value)}
+                        className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary"
+                      />
+                    )}
                   </div>
                 ))}
               </div>
