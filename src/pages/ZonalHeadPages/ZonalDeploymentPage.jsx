@@ -31,7 +31,7 @@ export default function ZonalDeploymentPage() {
     fetchAllStaff();
   }, [fetchAllStaff]);
 
-  const formations = ZONE_FORMATIONS[zone] || [];
+  const formationOptions = zone ? ZONE_FORMATIONS[zone] || [] : [];
 
   const filteredStaff = allStaff.filter((s) => {
     if (!search) return true;
@@ -66,16 +66,16 @@ export default function ZonalDeploymentPage() {
     try {
       const updates = [];
       for (const id of selectedIds) {
-        updates.push(updateStaff(id, { formation: targetFormation }));
+        updates.push(updateStaff(id, { zone, formation: targetFormation }));
       }
       await Promise.all(updates);
       await fetchAllStaff();
-      setMessage({ type: "success", text: `${selectedIds.size} staff posted to ${targetFormation}` });
+      setMessage({ type: "success", text: `${selectedIds.size} staff deployed to ${targetFormation} (${zone})` });
       setSelectedIds(new Set());
       setShowPostModal(false);
       setTargetFormation("");
     } catch {
-      setMessage({ type: "error", text: "Failed to post staff. Please try again." });
+      setMessage({ type: "error", text: "Failed to deploy staff. Please try again." });
     } finally {
       setPosting(false);
     }
@@ -210,7 +210,7 @@ export default function ZonalDeploymentPage() {
               <FiX size={20} />
             </button>
 
-            <h2 className="text-xl font-bold text-nis-primary mb-1">Post to Formation</h2>
+            <h2 className="text-xl font-bold text-nis-primary mb-1">Deploy Staff</h2>
             <p className="text-sm text-gray-500 mb-4">
               {selectedIds.size} staff selected — Zone {zone}
             </p>
@@ -226,23 +226,34 @@ export default function ZonalDeploymentPage() {
               </div>
             )}
 
-            <div className="flex flex-col gap-1.5 mb-6">
-              <label htmlFor="targetFormation" className="text-sm font-medium text-nis-primary">
-                Target Formation
-              </label>
-              <div className="relative">
-                <select
-                  id="targetFormation"
-                  value={targetFormation}
-                  onChange={(e) => setTargetFormation(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-300 text-sm appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary pr-10"
-                >
-                  <option value="">Select formation...</option>
-                  {formations.filter((f) => f !== "SHQ").map((f) => (
-                    <option key={f} value={f}>{f}</option>
-                  ))}
-                </select>
-                <FiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+            <div className="flex flex-col gap-4 mb-6">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-nis-primary">
+                  Zone
+                </label>
+                <div className="px-3 py-2.5 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700">
+                  {zone}
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="targetFormation" className="text-sm font-medium text-nis-primary">
+                  Formation
+                </label>
+                <div className="relative">
+                  <select
+                    id="targetFormation"
+                    value={targetFormation}
+                    onChange={(e) => setTargetFormation(e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-lg border border-gray-300 text-sm appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary pr-10"
+                  >
+                    <option value="">Select formation...</option>
+                    {formationOptions.map((f) => (
+                      <option key={f} value={f}>{f}</option>
+                    ))}
+                  </select>
+                  <FiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                </div>
               </div>
             </div>
 
@@ -264,12 +275,12 @@ export default function ZonalDeploymentPage() {
                 {posting ? (
                   <>
                     <LoadingSpinner size="sm" />
-                    Posting...
+                    Deploying...
                   </>
                 ) : (
                   <>
                     <FiSend size={16} />
-                    Confirm Posting
+                    Confirm Deployment
                   </>
                 )}
               </button>

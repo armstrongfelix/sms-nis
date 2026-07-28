@@ -2,13 +2,26 @@ import { useEffect, useState } from "react";
 import { FiSend, FiX, FiCheck, FiChevronDown } from "react-icons/fi";
 import useAllStaffStore from "../../stores/shq-store/allStaffStore";
 import LoadingSpinner from "../../components/spiner/LoadingSpinner";
-import { FORMATIONS, ZONES } from "../../selectors/staffStats";
+import { ZONES } from "../../selectors/staffStats";
+
+const ZONE_FORMATIONS = {
+  SHQ: ["SHQ", "FCSC"],
+  ZONEA: ["ZONEA", "LASC", "OGSC", "SEBC"],
+  ZONEB: ["ZONEB", "KDSC", "KNSC", "KOSC", "JISC", "SOSC", "ZASC", "KESC"],
+  ZONEC: ["ZONEC", "BASC", "YOSC", "BOSC", "GOSC", "ADSC", "TASC", "IDBC"],
+  ZONED: ["ZONED", "NISC", "KWSC", "KTSC", "FCSC"],
+  ZONEE: ["ZONEE", "IMSC", "ABSC", "ENSC", "EBSC", "ANSC", "NITSOL", "NITSA", "NFBC"],
+  ZONEF: ["ZONEF", "OYSC", "OSSC", "ONSC", "EKSC"],
+  ZONEG: ["ZONEG", "EDSC", "DESC", "BYSC", "RISC", "AKSC", "CRSC", "MMIA", "RVMC"],
+  ZONEH: ["ZONEH", "BESC", "PLSC", "NASC", "NAIA"],
+};
 
 export default function DeploymentPage() {
   const { allStaff, fetchAllStaff, updateStaff, loading } = useAllStaffStore();
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [search, setSearch] = useState("");
   const [showPostModal, setShowPostModal] = useState(false);
+  const [targetZone, setTargetZone] = useState("");
   const [targetFormation, setTargetFormation] = useState("");
   const [posting, setPosting] = useState(false);
   const [message, setMessage] = useState(null);
@@ -16,6 +29,14 @@ export default function DeploymentPage() {
   useEffect(() => {
     fetchAllStaff();
   }, [fetchAllStaff]);
+
+  const formationOptions = targetZone ? ZONE_FORMATIONS[targetZone] || [] : [];
+
+  useEffect(() => {
+    if (targetZone && targetFormation && !formationOptions.includes(targetFormation)) {
+      setTargetFormation("");
+    }
+  }, [targetZone]);
 
   const filteredStaff = allStaff.filter((s) => {
     if (!search) return true;
@@ -44,26 +65,23 @@ export default function DeploymentPage() {
   }
 
   async function handlePost() {
-    if (!targetFormation || selectedIds.size === 0) return;
+    if (!targetZone || !targetFormation || selectedIds.size === 0) return;
     setPosting(true);
     setMessage(null);
     try {
       const updates = [];
       for (const id of selectedIds) {
-        const data = { formation: targetFormation };
-        if (ZONES.includes(targetFormation)) {
-          data.zone = targetFormation;
-        }
-        updates.push(updateStaff(id, data));
+        updates.push(updateStaff(id, { zone: targetZone, formation: targetFormation }));
       }
       await Promise.all(updates);
       await fetchAllStaff();
-      setMessage({ type: "success", text: `${selectedIds.size} staff posted to ${targetFormation}` });
+      setMessage({ type: "success", text: `${selectedIds.size} staff deployed to ${targetFormation} (${targetZone})` });
       setSelectedIds(new Set());
       setShowPostModal(false);
+      setTargetZone("");
       setTargetFormation("");
     } catch {
-      setMessage({ type: "error", text: "Failed to post staff. Please try again." });
+      setMessage({ type: "error", text: "Failed to deploy staff. Please try again." });
     } finally {
       setPosting(false);
     }
@@ -195,7 +213,7 @@ export default function DeploymentPage() {
               <FiX size={20} />
             </button>
 
-            <h2 className="text-xl font-bold text-nis-primary mb-1">Post to Formation</h2>
+            <h2 className="text-xl font-bold text-nis-primary mb-1">Deploy Staff</h2>
             <p className="text-sm text-gray-500 mb-4">
               {selectedIds.size} staff selected for deployment
             </p>
@@ -211,30 +229,54 @@ export default function DeploymentPage() {
               </div>
             )}
 
-            <div className="flex flex-col gap-1.5 mb-6">
-              <label htmlFor="targetFormation" className="text-sm font-medium text-nis-primary">
-                Target Formation
-              </label>
-              <div className="relative">
-                <select
-                  id="targetFormation"
-                  value={targetFormation}
-                  onChange={(e) => setTargetFormation(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-300 text-sm appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary pr-10"
-                >
-                  <option value="">Select formation...</option>
-                  {FORMATIONS.filter((f) => f !== "SHQ").map((f) => (
-                    <option key={f} value={f}>{f}</option>
-                  ))}
-                </select>
-                <FiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+            <div className="flex flex-col gap-4 mb-6">
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="targetZone" className="text-sm font-medium text-nis-primary">
+                  Zone
+                </label>
+                <div className="relative">
+                  <select
+                    id="targetZone"
+                    value={targetZone}
+                    onChange={(e) => setTargetZone(e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-lg border border-gray-300 text-sm appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary pr-10"
+                  >
+                    <option value="">Select zone...</option>
+                    {ZONES.map((z) => (
+                      <option key={z} value={z}>{z}</option>
+                    ))}
+                  </select>
+                  <FiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="targetFormation" className="text-sm font-medium text-nis-primary">
+                  Formation
+                </label>
+                <div className="relative">
+                  <select
+                    id="targetFormation"
+                    value={targetFormation}
+                    onChange={(e) => setTargetFormation(e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-lg border border-gray-300 text-sm appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary pr-10"
+                  >
+                    <option value="">
+                      {targetZone ? "Select formation..." : "Select a zone first"}
+                    </option>
+                    {formationOptions.map((f) => (
+                      <option key={f} value={f}>{f}</option>
+                    ))}
+                  </select>
+                  <FiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                </div>
               </div>
             </div>
 
             <div className="flex justify-end gap-3">
               <button
                 type="button"
-                onClick={() => (setShowPostModal(false), setTargetFormation(""))}
+                onClick={() => (setShowPostModal(false), setTargetZone(""), setTargetFormation(""))}
                 disabled={posting}
                 className="px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50"
               >
@@ -243,18 +285,18 @@ export default function DeploymentPage() {
               <button
                 type="button"
                 onClick={handlePost}
-                disabled={!targetFormation || posting}
+                disabled={!targetZone || !targetFormation || posting}
                 className="flex items-center gap-2 px-4 py-2 rounded-lg bg-nis-primary text-white text-sm font-medium hover:bg-nis-primary-light transition-colors cursor-pointer disabled:opacity-50"
               >
                 {posting ? (
                   <>
                     <LoadingSpinner size="sm" />
-                    Posting...
+                    Deploying...
                   </>
                 ) : (
                   <>
                     <FiSend size={16} />
-                    Confirm Posting
+                    Confirm Deployment
                   </>
                 )}
               </button>
