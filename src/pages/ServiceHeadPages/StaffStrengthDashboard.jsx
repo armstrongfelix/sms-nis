@@ -63,7 +63,7 @@ export default function StaffStrengthDashboard() {
   }
 
   return (
-    <div className="space-y-4 p-2gi">
+    <div className="space-y-4 p-2">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
           <h1 className="text-xl font-bold text-nis-primary">
