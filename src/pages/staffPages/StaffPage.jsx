@@ -21,11 +21,11 @@ export default function StaffPage() {
 
   return (
     <div className="force-light min-h-screen bg-gray-50">
-      <div className="flex items-center justify-between bg-white shadow-sm border-b border-gray-200 px-14 pt-2 ">
+      <div className="sticky top-0 flex items-center justify-between bg-white shadow-sm border-b border-gray-200 px-14 py-2 ">
         <img
           src="src\assets\images\nis-logo.png"
           alt="nis logo "
-          className="h-25 w-25"
+          className="h-20 w-20"
         />
         <Button
           variant="ghost"
