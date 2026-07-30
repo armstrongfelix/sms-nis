@@ -56,14 +56,14 @@ export default function AllAdminsDashbord() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search by zone, formation, role, email..."
-        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary"
+        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-nis-primary/30 focus:border-nis-primary dark:border-gray-600"
       />
 
-      <div className="overflow-auto max-h-[calc(100vh-140px)] rounded-xl border border-gray-200 shadow-sm">
-        <table className="w-full text-sm text-left bg-white">
-          <thead className="sticky top-0 z-30 bg-white text-nis-primary font-semibold">
+      <div className="overflow-auto max-h-[calc(100vh-140px)] rounded-xl border border-gray-200 shadow-sm dark:border-gray-700">
+        <table className="w-full text-sm text-left bg-white dark:bg-gray-900">
+          <thead className="sticky top-0 z-30 bg-white dark:bg-gray-900 text-nis-primary font-semibold">
             <tr>
-              <th className="px-4 py-3 sticky left-0 top-0 z-20 bg-white">S/N</th>
+              <th className="px-4 py-3 sticky left-0 top-0 z-20 bg-white dark:bg-gray-900">S/N</th>
               <th className="px-4 py-3 whitespace-nowrap">Zone</th>
               <th className="px-4 py-3 whitespace-nowrap">Formation</th>
               <th className="px-4 py-3 whitespace-nowrap">Role</th>
@@ -90,9 +90,9 @@ export default function AllAdminsDashbord() {
                 <tr
                   key={a.id}
                   onClick={() => setSelected(a)}
-                  className="hover:bg-gray-50 transition-colors cursor-pointer"
+                  className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer"
                 >
-                  <td className="px-4 py-2.5 sticky left-0 z-20 bg-white dark:text-white">{i + 1}</td>
+                  <td className="px-4 py-2.5 sticky left-0 z-20 bg-white dark:bg-gray-900 dark:text-white">{i + 1}</td>
                   <td className="px-4 py-2.5 dark:text-white">{a.zone}</td>
                   <td className="px-4 py-2.5 dark:text-white">{a.formation}</td>
                   <td className="px-4 py-2.5 dark:text-white">{a.role}</td>
@@ -110,12 +110,12 @@ export default function AllAdminsDashbord() {
           onClick={() => setSelected(null)}
         >
           <div
-            className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 relative"
+            className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-md p-6 relative"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setSelected(null)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors"
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
             >
               <FiX size={20} />
             </button>
@@ -129,13 +129,13 @@ export default function AllAdminsDashbord() {
                 <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">
                   Zone
                 </span>
-                <p className="text-sm text-gray-800 mt-0.5">{selected.zone}</p>
+                <p className="text-sm text-gray-800 dark:text-gray-300 mt-0.5">{selected.zone}</p>
               </div>
               <div>
                 <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">
                   Formation
                 </span>
-                <p className="text-sm text-gray-800 mt-0.5">
+                <p className="text-sm text-gray-800 dark:text-gray-300 mt-0.5">
                   {selected.formation}
                 </p>
               </div>
@@ -143,13 +143,13 @@ export default function AllAdminsDashbord() {
                 <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">
                   Role
                 </span>
-                <p className="text-sm text-gray-800 mt-0.5">{selected.role}</p>
+                <p className="text-sm text-gray-800 dark:text-gray-300 mt-0.5">{selected.role}</p>
               </div>
               <div>
                 <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">
                   Email
                 </span>
-                <p className="text-sm text-gray-800 mt-0.5">
+                <p className="text-sm text-gray-800 dark:text-gray-300 mt-0.5">
                   {selected.email}
                 </p>
               </div>
@@ -157,12 +157,12 @@ export default function AllAdminsDashbord() {
                 <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">
                   Admin ID
                 </span>
-                <p className="text-sm text-gray-500 mt-0.5 font-mono">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 font-mono">
                   {selected.id}
                 </p>
               </div>
 
-              <hr className="border-gray-200" />
+              <hr className="border-gray-200 dark:border-gray-700" />
 
               <div className="text-center">
                 <button
@@ -176,7 +176,7 @@ export default function AllAdminsDashbord() {
               </div>
 
               {newPassword && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 text-left space-y-2">
+                <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-xl p-4 text-left space-y-2">
                   <p className="text-sm font-semibold text-yellow-800">
                     Password Reset
                   </p>
