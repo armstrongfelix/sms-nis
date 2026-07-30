@@ -7,6 +7,7 @@ import RootLayout from "../components/layout/RootLayout";
 import WelcomePage from "../pages/WelcomePage";
 import AdminLoginPage from "../pages/LoginPages/AdminLoginPage";
 import StaffLoginPage from "../pages/LoginPages/StaffLoginPage";
+import StaffPage from "../pages/staffPages/StaffPage";
 import AllStaffDashboard from "../pages/ServiceHeadPages/AllStaffDashbord";
 import AllAdminsDashbord from "../pages/ServiceHeadPages/AllAdminsDashbord";
 import ZonalStaffDashboard from "../pages/ZonalHeadPages/ZonalStaffDashboard";
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
   {
     path: "/staff-login",
     element: <StaffLoginPage />,
+  },
+  {
+    path: "/staff-dashboard",
+    element: <StaffPage />,
   },
   {
     path: "/dashboard",
