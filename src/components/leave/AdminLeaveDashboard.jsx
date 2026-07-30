@@ -2,7 +2,7 @@ import { useState } from "react";
 import LeaveStatusBadge from "./LeaveStatusBadge";
 import LoadingSpinner from "../spiner/LoadingSpinner";
 import Button from "../buttons/Button";
-import { FiCheck, FiX, FiSearch } from "react-icons/fi";
+import { FiCheck, FiX, FiSearch, FiXCircle } from "react-icons/fi";
 
 function formatDate(ts) {
   if (!ts) return "-";
@@ -28,6 +28,7 @@ export default function AdminLeaveDashboard({
   const [search, setSearch] = useState("");
   const [rejectModal, setRejectModal] = useState(null);
   const [rejectComment, setRejectComment] = useState("");
+  const [selectedApp, setSelectedApp] = useState(null);
 
   if (loading) {
     return (
@@ -111,8 +112,8 @@ export default function AdminLeaveDashboard({
           <table className="w-full text-sm text-left bg-white dark:bg-gray-900">
             <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-800 text-nis-primary font-semibold">
               <tr>
-                <th className="px-4 py-3 whitespace-nowrap">S/N</th>
-                <th className="px-4 py-3 whitespace-nowrap">Officer Name</th>
+                <th className="px-4 py-3 whitespace-nowrap sticky left-0 z-20 bg-gray-50 dark:bg-gray-800 min-w-[50px]">S/N</th>
+                <th className="px-4 py-3 whitespace-nowrap sticky left-[50px] z-20 bg-gray-50 dark:bg-gray-800 min-w-[160px]">Officer Name</th>
                 <th className="px-4 py-3 whitespace-nowrap">Service No</th>
                 <th className="px-4 py-3 whitespace-nowrap">Rank</th>
                 <th className="px-4 py-3 whitespace-nowrap">Leave Type</th>
@@ -129,9 +130,13 @@ export default function AdminLeaveDashboard({
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {filtered.map((app, i) => (
-                <tr key={app.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                  <td className="px-4 py-3">{i + 1}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">
+                <tr
+                  key={app.id}
+                  onClick={() => setSelectedApp(app)}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer"
+                >
+                  <td className="px-4 py-3 sticky left-0 z-10 bg-white dark:bg-gray-900">{i + 1}</td>
+                  <td className="px-4 py-3 whitespace-nowrap sticky left-[50px] z-10 bg-white dark:bg-gray-900">
                     {app.surname} {app.firstName}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">{app.serviceNo}</td>
@@ -159,14 +164,14 @@ export default function AdminLeaveDashboard({
                     {app.status === "pending" ? (
                       <div className="flex gap-2">
                         <button
-                          onClick={() => onApprove(app.id)}
+                          onClick={(e) => { e.stopPropagation(); onApprove(app.id); }}
                           className="p-1.5 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 transition-colors cursor-pointer"
                           title="Approve"
                         >
                           <FiCheck size={16} />
                         </button>
                         <button
-                          onClick={() => openRejectModal(app)}
+                          onClick={(e) => { e.stopPropagation(); openRejectModal(app); }}
                           className="p-1.5 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition-colors cursor-pointer"
                           title="Reject"
                         >
@@ -211,6 +216,129 @@ export default function AdminLeaveDashboard({
               <Button variant="primary" onClick={handleReject}>
                 Reject
               </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {selectedApp && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+          onClick={() => setSelectedApp(null)}
+        >
+          <div
+            className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-6 relative mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setSelectedApp(null)}
+              className="absolute top-4 right-4 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors cursor-pointer"
+            >
+              <FiXCircle size={20} />
+            </button>
+
+            <h2 className="text-xl font-bold text-nis-primary mb-6">
+              Leave Application Details
+            </h2>
+
+            <div className="space-y-5">
+              <fieldset className="border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                <legend className="text-sm font-semibold text-nis-primary px-2">Officer Information</legend>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-xs font-medium text-gray-500 uppercase">Full Name</span>
+                    <span className="text-sm text-nis-primary font-medium">{selectedApp.surname} {selectedApp.firstName} {selectedApp.middleName || ""}</span>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-xs font-medium text-gray-500 uppercase">Service No</span>
+                    <span className="text-sm text-nis-primary font-medium">{selectedApp.serviceNo}</span>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-xs font-medium text-gray-500 uppercase">Rank</span>
+                    <span className="text-sm text-nis-primary font-medium">{selectedApp.rank}</span>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-xs font-medium text-gray-500 uppercase">Email</span>
+                    <span className="text-sm text-nis-primary font-medium">{selectedApp.email}</span>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-xs font-medium text-gray-500 uppercase">Zone</span>
+                    <span className="text-sm text-nis-primary font-medium">{selectedApp.zone || "-"}</span>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-xs font-medium text-gray-500 uppercase">Formation</span>
+                    <span className="text-sm text-nis-primary font-medium">{selectedApp.formation || "-"}</span>
+                  </div>
+                </div>
+              </fieldset>
+
+              <fieldset className="border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                <legend className="text-sm font-semibold text-nis-primary px-2">Leave Details</legend>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-xs font-medium text-gray-500 uppercase">Leave Type</span>
+                    <span className="text-sm text-nis-primary font-medium">{selectedApp.leaveType}</span>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-xs font-medium text-gray-500 uppercase">Start Date</span>
+                    <span className="text-sm text-nis-primary font-medium">{formatDate(selectedApp.startDate)}</span>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-xs font-medium text-gray-500 uppercase">End Date</span>
+                    <span className="text-sm text-nis-primary font-medium">{formatDate(selectedApp.endDate)}</span>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-xs font-medium text-gray-500 uppercase">Number of Days</span>
+                    <span className="text-sm text-nis-primary font-medium">{selectedApp.numberOfDays}</span>
+                  </div>
+                  <div className="flex flex-col gap-0.5 md:col-span-2">
+                    <span className="text-xs font-medium text-gray-500 uppercase">Reason</span>
+                    <span className="text-sm text-nis-primary font-medium">{selectedApp.reason}</span>
+                  </div>
+                </div>
+              </fieldset>
+
+              <fieldset className="border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                <legend className="text-sm font-semibold text-nis-primary px-2">Status & Review</legend>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-xs font-medium text-gray-500 uppercase">Status</span>
+                    <span><LeaveStatusBadge status={selectedApp.status} /></span>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-xs font-medium text-gray-500 uppercase">Reviewed By</span>
+                    <span className="text-sm text-nis-primary font-medium">{selectedApp.reviewedByName || "-"}</span>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-xs font-medium text-gray-500 uppercase">Reviewed At</span>
+                    <span className="text-sm text-nis-primary font-medium">{formatDate(selectedApp.reviewedAt)}</span>
+                  </div>
+                  <div className="flex flex-col gap-0.5 md:col-span-3">
+                    <span className="text-xs font-medium text-gray-500 uppercase">Admin Comment</span>
+                    <span className="text-sm text-nis-primary font-medium">{selectedApp.adminComment || "-"}</span>
+                  </div>
+                </div>
+                {selectedApp.status === "pending" && (
+                  <div className="flex gap-3 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      leftIcon={<FiCheck />}
+                      onClick={() => { onApprove(selectedApp.id); setSelectedApp(null); }}
+                    >
+                      Approve
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      leftIcon={<FiX />}
+                      onClick={() => { setSelectedApp(null); openRejectModal(selectedApp); }}
+                    >
+                      Reject
+                    </Button>
+                  </div>
+                )}
+              </fieldset>
             </div>
           </div>
         </div>
