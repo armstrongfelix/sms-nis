@@ -1,0 +1,28 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "leaveApplications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "zone", "order": "ASCENDING" },
+        { "fieldPath": "appliedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "leaveApplications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "formation", "order": "ASCENDING" },
+        { "fieldPath": "appliedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "leaveApplications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "officerId", "order": "ASCENDING" },
+        { "fieldPath": "appliedAt", "order": "DESCENDING" }
+      ]
+    }
+  ]
+}

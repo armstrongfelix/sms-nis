@@ -19,6 +19,9 @@ import ZonalStaffStrengthDashboard from "../pages/ZonalHeadPages/ZonalStaffStren
 import ZonalDeploymentPage from "../pages/ZonalHeadPages/ZonalDeploymentPage";
 import FormationStaffStrengthDashboard from "../pages/FormationHeadPage/FormationStaffStrengthDashboard";
 import DeploymentPage from "../pages/ServiceHeadPages/DeploymentPage";
+import ServiceHeadLeaveApplications from "../pages/ServiceHeadPages/ServiceHeadLeaveApplications";
+import ZonalLeaveApplications from "../pages/ZonalHeadPages/ZonalLeaveApplications";
+import FormationLeaveApplications from "../pages/FormationHeadPage/FormationLeaveApplications";
 
 const router = createBrowserRouter([
   {
@@ -46,13 +49,16 @@ const router = createBrowserRouter([
           { path: "zonal-staff", element: <ZonalStaffDashboard /> },
           { path: "zonal-analytics", element: <ZonalStaffStrengthDashboard /> },
           { path: "zonal-deployment", element: <ZonalDeploymentPage /> },
+          { path: "zonal-leave", element: <ZonalLeaveApplications /> },
           { path: "formation-staff", element: <FormationStaffDashboard /> },
           { path: "formation-analytics", element: <FormationStaffStrengthDashboard /> },
+          { path: "formation-leave", element: <FormationLeaveApplications /> },
           { path: "register-staff", element: <RegistrationForm /> },
           { path: "register-admin", element: <AdminRegistrationForm /> },
           { path: "stats-debug", element: <StatsDebugPage /> },
           { path: "analytics", element: <StaffStrengthDashboard /> },
           { path: "deployment", element: <DeploymentPage /> },
+          { path: "leave", element: <ServiceHeadLeaveApplications /> },
         ],
       },
     ],
