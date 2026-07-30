@@ -1,22 +1,18 @@
 const sizeStyles = {
-  sm: 'h-5 w-5',
-  md: 'h-8 w-8',
-  lg: 'h-12 w-12',
-}
+  sm: "h-4 w-4",
+  md: "h-6 w-6",
+  lg: "h-8 w-8",
+};
 
-function LoadingSpinner({
-  size = 'md',
-  fullScreen = false,
-  className = '',
-}) {
+function LoadingSpinner({ size = "md", fullScreen = false, className = "" }) {
   const spinner = (
     <svg
       className={[
-        'animate-spin',
+        "animate-spin",
         sizeStyles[size] || sizeStyles.md,
-        'text-nis-primary',
+        "text-nis-tertiary-dark",
         className,
-      ].join(' ')}
+      ].join(" ")}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
@@ -36,14 +32,14 @@ function LoadingSpinner({
         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
       />
     </svg>
-  )
+  );
 
   if (fullScreen) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-white/80 z-50">
         {spinner}
       </div>
-    )
+    );
   }
 
   return (
@@ -51,7 +47,7 @@ function LoadingSpinner({
       {spinner}
       <span className="sr-only">Loading...</span>
     </div>
-  )
+  );
 }
 
-export default LoadingSpinner
+export default LoadingSpinner;
