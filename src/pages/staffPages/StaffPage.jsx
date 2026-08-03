@@ -56,68 +56,9 @@ export default function StaffPage() {
           </div>
         </header>
 
-        <section className="bg-white border border-gray-200 rounded-xl p-4 md:p-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h2 className="text-base font-semibold text-nis-primary">
-                Incident Reporting
-              </h2>
-              <p className="text-xs text-gray-400 mt-0.5">
-                Report security and migration issues within your locality
-              </p>
-            </div>
-            <Button
-              variant="primary"
-              size="sm"
-              leftIcon={<FiAlertTriangle />}
-              onClick={() => setShowIncidentForm(true)}
-            >
-              Report an Incident
-            </Button>
-          </div>
-        </section>
-
-        <section className="bg-white border border-gray-200 rounded-xl p-4 md:p-5">
-          <div className="mb-4">
-            <h2 className="text-base font-semibold text-nis-primary">
-              My Incident Reports
-            </h2>
-            <p className="text-xs text-gray-400 mt-0.5">
-              Reports you have submitted and their current status
-            </p>
-          </div>
-          <MyIncidentReportList
-            officerId={s.authUid}
-            refreshKey={incidentRefreshKey}
-          />
-        </section>
-
-        <section className="bg-white border border-gray-200 rounded-xl p-4 md:p-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h2 className="text-base font-semibold text-nis-primary">
-                My Leave Applications
-              </h2>
-              <p className="text-xs text-gray-400 mt-0.5">
-                View and track your leave requests
-              </p>
-            </div>
-            <Button
-              variant="primary"
-              size="sm"
-              leftIcon={<FiPlus />}
-              onClick={() => setShowForm(true)}
-            >
-              Apply for Leave
-            </Button>
-          </div>
-        </section>
-
-        <LeaveApplicationList officerId={s.authUid} key={refreshKey} />
-
-        <details className="bg-white border border-gray-200 rounded-xl">
+        <details className="bg-white border border-gray-200 rounded-xl" open>
           <summary className="text-base font-semibold text-nis-primary p-4 md:p-5 cursor-pointer select-none">
-            View Profile Details
+            Profile Details
           </summary>
           <div className="px-4 md:px-5 pb-5 space-y-4">
             {[
@@ -195,6 +136,65 @@ export default function StaffPage() {
             ))}
           </div>
         </details>
+
+        <section className="bg-white border border-gray-200 rounded-xl p-4 md:p-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h2 className="text-base font-semibold text-nis-primary">
+                Incident Reporting
+              </h2>
+              <p className="text-xs text-gray-400 mt-0.5">
+                Report security and migration issues within your locality
+              </p>
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              leftIcon={<FiAlertTriangle />}
+              onClick={() => setShowIncidentForm(true)}
+            >
+              Report an Incident
+            </Button>
+          </div>
+        </section>
+
+        <section className="bg-white border border-gray-200 rounded-xl p-4 md:p-5">
+          <div className="mb-4">
+            <h2 className="text-base font-semibold text-nis-primary">
+              My Incident Reports
+            </h2>
+            <p className="text-xs text-gray-400 mt-0.5">
+              Reports you have submitted and their current status
+            </p>
+          </div>
+          <MyIncidentReportList
+            officerId={s.authUid}
+            refreshKey={incidentRefreshKey}
+          />
+        </section>
+
+        <section className="bg-white border border-gray-200 rounded-xl p-4 md:p-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h2 className="text-base font-semibold text-nis-primary">
+                My Leave Applications
+              </h2>
+              <p className="text-xs text-gray-400 mt-0.5">
+                View and track your leave requests
+              </p>
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              leftIcon={<FiPlus />}
+              onClick={() => setShowForm(true)}
+            >
+              Apply for Leave
+            </Button>
+          </div>
+        </section>
+
+        <LeaveApplicationList officerId={s.authUid} key={refreshKey} />
 
         <section className="bg-white border border-gray-200 rounded-xl p-4 md:p-5">
           <div className="mb-4">
