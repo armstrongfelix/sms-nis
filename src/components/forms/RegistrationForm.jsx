@@ -381,7 +381,7 @@ export default function RegistrationForm() {
                   );
 
                   const credential = await createUserWithEmailAndPassword(auth, email, data.password);
-                  await addStaff({ ...data, email, authUid: credential.user.uid });
+                  await addStaff({ ...data, email, authUid: credential.user.uid, deploymentHistory: [] });
                   await signOut(auth);
                   await signInWithEmailAndPassword(auth, adminEmail, adminPassword);
                   window.location.href = "/dashboard/register-staff";

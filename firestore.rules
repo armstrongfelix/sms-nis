@@ -48,6 +48,32 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
+    // ==================== incidentReports collection ====================
+    match /incidentReports/{reportId} {
+      // Staff can create an incident report only for themselves
+      allow create: if request.auth != null
+        && request.resource.data.officerId == request.auth.uid
+        && request.resource.data.status == "pending"
+        && !request.resource.data.keys().hasAny(["attendedAt"]);
+
+      // Staff can read only their own reports; admins can read all
+      allow read: if request.auth != null && (
+        resource.data.officerId == request.auth.uid
+        || exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+
+      // Only admins can update reports (mark attended)
+      allow update: if request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(["status", "attendedAt"])
+        && request.resource.data.status in ["pending", "attended"];
+
+      // Only admins can clear reports
+      allow delete: if request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
     // ==================== Default deny ====================
     match /{document=**} {
       allow read, write: if false;

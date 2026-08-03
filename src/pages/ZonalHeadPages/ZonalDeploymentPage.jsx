@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { FiSend, FiX, FiCheck, FiChevronDown } from "react-icons/fi";
+import { arrayUnion } from "firebase/firestore";
 import useZonalStaffStore from "../../stores/zonal-store/zonalStaffStore";
 import { useAuth } from "../../contexts/AuthContext";
 import LoadingSpinner from "../../components/spiner/LoadingSpinner";
+import DeploymentHistory from "../../components/deployment/DeploymentHistory";
+import StaffDetailsDialog from "../../components/deployment/StaffDetailsDialog";
 import { getRankLevel } from "../../selectors/staffStats";
 
 const ZONE_FORMATIONS = {
@@ -20,6 +23,7 @@ export default function ZonalDeploymentPage() {
   const { allStaff, fetchAllStaff, updateStaff, loading } = useZonalStaffStore();
   const { adminData } = useAuth();
   const zone = adminData?.zone;
+  const adminName = adminData?.email?.split("@")[0] || "Admin";
 
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [search, setSearch] = useState("");
@@ -27,6 +31,7 @@ export default function ZonalDeploymentPage() {
   const [targetFormation, setTargetFormation] = useState("");
   const [posting, setPosting] = useState(false);
   const [message, setMessage] = useState(null);
+  const [viewingStaff, setViewingStaff] = useState(null);
 
   useEffect(() => {
     fetchAllStaff();
@@ -73,7 +78,23 @@ export default function ZonalDeploymentPage() {
     try {
       const updates = [];
       for (const id of selectedIds) {
-        updates.push(updateStaff(id, { zone, formation: targetFormation }));
+        const staff = allStaff.find((s) => s.id === id);
+        if (!staff) continue;
+        if (staff.formation === targetFormation) continue;
+        updates.push(
+          updateStaff(id, {
+            zone,
+            formation: targetFormation,
+            deploymentHistory: arrayUnion({
+              fromZone: staff.zone || "",
+              fromFormation: staff.formation || "",
+              toZone: zone,
+              toFormation: targetFormation,
+              deployedAt: new Date(),
+              deployedBy: adminName,
+            }),
+          })
+        );
       }
       await Promise.all(updates);
       await fetchAllStaff();
@@ -81,8 +102,8 @@ export default function ZonalDeploymentPage() {
       setSelectedIds(new Set());
       setShowPostModal(false);
       setTargetFormation("");
-    } catch {
-      setMessage({ type: "error", text: "Failed to deploy staff. Please try again." });
+    } catch (err) {
+      setMessage({ type: "error", text: `Failed to deploy staff. ${err.message}` });
     } finally {
       setPosting(false);
     }
@@ -139,7 +160,7 @@ export default function ZonalDeploymentPage() {
         <table className="w-full text-sm text-left bg-white dark:bg-gray-900">
           <thead className="sticky top-0 z-30 bg-white dark:bg-gray-900 text-nis-primary font-semibold">
             <tr>
-              <th className="px-4 py-3 w-10">
+              <th className="px-4 py-3 w-10 sticky left-0 z-40 bg-white dark:bg-gray-900">
                 <input
                   type="checkbox"
                   checked={allFilteredSelected}
@@ -147,25 +168,26 @@ export default function ZonalDeploymentPage() {
                   className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-nis-primary focus:ring-nis-primary cursor-pointer"
                 />
               </th>
-              <th className="px-4 py-3 whitespace-nowrap">S/N</th>
-              <th className="px-4 py-3 whitespace-nowrap">Surname</th>
+              <th className="px-4 py-3 whitespace-nowrap w-12 sticky left-12 z-40 bg-white dark:bg-gray-900">S/N</th>
+              <th className="px-4 py-3 whitespace-nowrap sticky left-24 z-40 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700">Surname</th>
               <th className="px-4 py-3 whitespace-nowrap">First Name</th>
               <th className="px-4 py-3 whitespace-nowrap">Service No</th>
               <th className="px-4 py-3 whitespace-nowrap">Rank</th>
               <th className="px-4 py-3 whitespace-nowrap">Current Formation</th>
               <th className="px-4 py-3 whitespace-nowrap">Gender</th>
+              <th className="px-4 py-3 whitespace-nowrap">Deployment History</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {loading ? (
               <tr>
-                <td colSpan={8} className="px-4 py-12 text-center dark:text-white">
+                <td colSpan={9} className="px-4 py-12 text-center dark:text-white">
                   <LoadingSpinner size="lg" />
                 </td>
               </tr>
             ) : filteredStaff.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-gray-400 dark:text-gray-500 dark:text-white">
+                <td colSpan={9} className="px-4 py-8 text-center text-gray-400 dark:text-gray-500 dark:text-white">
                   {allStaff.length === 0
                     ? "No staff records found for your zone."
                     : "No records match your search."}
@@ -173,17 +195,18 @@ export default function ZonalDeploymentPage() {
               </tr>
             ) : (
               sortedStaff.map((s, i) => (
-                <tr key={s.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                  <td className="px-4 py-2.5 dark:text-white">
+                <tr key={s.id} onClick={() => setViewingStaff(s)} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer">
+                  <td className="px-4 py-2.5 dark:text-white sticky left-0 z-20 bg-white dark:bg-gray-900">
                     <input
                       type="checkbox"
                       checked={selectedIds.has(s.id)}
                       onChange={() => toggleSelect(s.id)}
+                      onClick={(e) => e.stopPropagation()}
                       className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-nis-primary focus:ring-nis-primary cursor-pointer"
                     />
                   </td>
-                  <td className="px-4 py-2.5 dark:text-white">{i + 1}</td>
-                  <td className="px-4 py-2.5 whitespace-nowrap dark:text-white">{s.surname}</td>
+                  <td className="px-4 py-2.5 dark:text-white sticky left-12 z-20 bg-white dark:bg-gray-900">{i + 1}</td>
+                  <td className="px-4 py-2.5 whitespace-nowrap dark:text-white sticky left-24 z-20 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700">{s.surname}</td>
                   <td className="px-4 py-2.5 whitespace-nowrap dark:text-white">{s.firstName}</td>
                   <td className="px-4 py-2.5 dark:text-white">{s.serviceNumber}</td>
                   <td className="px-4 py-2.5 dark:text-white">{s.rank}</td>
@@ -193,6 +216,9 @@ export default function ZonalDeploymentPage() {
                     </span>
                   </td>
                   <td className="px-4 py-2.5 dark:text-white">{s.gender}</td>
+                  <td className="px-4 py-2.5 dark:text-white">
+                    <DeploymentHistory history={s.deploymentHistory} />
+                  </td>
                 </tr>
               ))
             )}
@@ -295,6 +321,8 @@ export default function ZonalDeploymentPage() {
           </div>
         </div>
       )}
+
+      <StaffDetailsDialog staff={viewingStaff} onClose={() => setViewingStaff(null)} />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { FiX } from "react-icons/fi"
+import { DeploymentTimeline } from "../deployment/DeploymentHistory"
 
 const DETAIL_FIELDS = [
   { id: "title", label: "Title" },
@@ -56,6 +57,13 @@ export default function StaffDetailDialog({ staff, onClose }) {
               </span>
             </div>
           ))}
+        </div>
+
+        <div className="mt-6">
+          <h3 className="text-sm font-semibold text-nis-primary uppercase tracking-wide mb-3">
+            Deployment History
+          </h3>
+          <DeploymentTimeline history={staff.deploymentHistory} />
         </div>
       </div>
     </div>

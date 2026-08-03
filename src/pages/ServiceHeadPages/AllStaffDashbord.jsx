@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FiEdit2, FiX } from "react-icons/fi";
 import useAllStaffStore from "../../stores/shq-store/allStaffStore";
 import LoadingSpinner from "../../components/spiner/LoadingSpinner";
+import DeploymentHistory from "../../components/deployment/DeploymentHistory";
 import { RANKS, ZONES, getRankLevel } from "../../selectors/staffStats";
 import ExportButtons from "../../components/export/ExportButtons";
 import StaffDetailDialog from "../../components/dashboard/StaffDetailDialog";
@@ -156,19 +157,20 @@ export default function AllStaffDashboard() {
               <th className="px-4 py-3 whitespace-nowrap">BVN</th>
               <th className="px-4 py-3 whitespace-nowrap">NHF</th>
               <th className="px-4 py-3 whitespace-nowrap">Address</th>
+              <th className="px-4 py-3 whitespace-nowrap">Deployment History</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {loading ? (
               <tr>
-                <td colSpan={20} className="px-4 py-12 text-center dark:text-white">
+                <td colSpan={21} className="px-4 py-12 text-center dark:text-white">
                   <LoadingSpinner size="lg" />
                 </td>
               </tr>
             ) : filteredStaff.length === 0 ? (
               <tr>
                 <td
-                  colSpan={20}
+                  colSpan={21}
                   className="px-4 py-8 text-center text-gray-400 dark:text-gray-500 dark:text-white"
                 >
                   {allStaff.length === 0
@@ -225,6 +227,9 @@ export default function AllStaffDashboard() {
                     title={s.permanentAddress}
                   >
                     {s.permanentAddress}
+                  </td>
+                  <td className="px-4 py-2.5 dark:text-white">
+                    <DeploymentHistory history={s.deploymentHistory} />
                   </td>
                 </tr>
               ))
