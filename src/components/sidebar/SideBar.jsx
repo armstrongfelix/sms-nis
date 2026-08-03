@@ -5,7 +5,7 @@ import { useTheme } from "../../contexts/ThemeContext";
 import {
   FiGrid, FiUsers, FiShield, FiUserPlus, FiUserCheck,
   FiMapPin, FiBriefcase, FiBarChart2, FiLogOut, FiMenu, FiX, FiSend,
-  FiSun, FiMoon, FiMonitor, FiCalendar,
+  FiSun, FiMoon, FiMonitor, FiCalendar, FiAlertTriangle,
 } from "react-icons/fi";
 
 function getNavLinks(adminData) {
@@ -25,6 +25,7 @@ function getNavLinks(adminData) {
       { to: "/dashboard/register-admin", label: "Register Admin", icon: FiUserCheck },
       { to: "/dashboard/deployment", label: "Deployment", icon: FiSend },
       { to: "/dashboard/leave", label: "Leave Applications", icon: FiCalendar },
+      { to: "/dashboard/incidents", label: "Incident Reports", icon: FiAlertTriangle },
     );
   }
 
@@ -34,6 +35,7 @@ function getNavLinks(adminData) {
       { to: "/dashboard/zonal-staff", label: `${zone} Staff`, icon: FiMapPin },
       { to: "/dashboard/zonal-deployment", label: "Deployment", icon: FiSend },
       { to: "/dashboard/zonal-leave", label: "Leave Applications", icon: FiCalendar },
+      { to: "/dashboard/incidents", label: "Incident Reports", icon: FiAlertTriangle },
     );
   }
 
@@ -42,6 +44,7 @@ function getNavLinks(adminData) {
       { to: "/dashboard/formation-analytics", label: "Analytics", icon: FiBarChart2 },
       { to: "/dashboard/formation-staff", label: `${formation} Staff`, icon: FiBriefcase },
       { to: "/dashboard/formation-leave", label: "Leave Applications", icon: FiCalendar },
+      { to: "/dashboard/incidents", label: "Incident Reports", icon: FiAlertTriangle },
     );
   }
 

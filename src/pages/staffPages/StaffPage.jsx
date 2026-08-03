@@ -3,14 +3,18 @@ import { useNavigate } from "react-router-dom";
 import useStaffStore from "../../stores/staff-store/staffStore";
 import LeaveApplicationForm from "../../components/leave/LeaveApplicationForm";
 import LeaveApplicationList from "../../components/leave/LeaveApplicationList";
+import IncidentReportForm from "../../components/incident/IncidentReportForm";
+import MyIncidentReportList from "../../components/incident/MyIncidentReportList";
 import Button from "../../components/buttons/Button";
-import { FiLogOut, FiPlus } from "react-icons/fi";
+import { FiLogOut, FiPlus, FiAlertTriangle } from "react-icons/fi";
 
 export default function StaffPage() {
   const navigate = useNavigate();
   const { staffData, logout } = useStaffStore();
   const [showForm, setShowForm] = useState(false);
+  const [showIncidentForm, setShowIncidentForm] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [incidentRefreshKey, setIncidentRefreshKey] = useState(0);
 
   if (!staffData) {
     navigate("/staff-login", { replace: true });
@@ -50,6 +54,42 @@ export default function StaffPage() {
             </span>
           </div>
         </header>
+
+        <section className="bg-white border border-gray-200 rounded-xl p-4 md:p-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h2 className="text-base font-semibold text-nis-primary">
+                Incident Reporting
+              </h2>
+              <p className="text-xs text-gray-400 mt-0.5">
+                Report security and migration issues within your locality
+              </p>
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              leftIcon={<FiAlertTriangle />}
+              onClick={() => setShowIncidentForm(true)}
+            >
+              Report an Incident
+            </Button>
+          </div>
+        </section>
+
+        <section className="bg-white border border-gray-200 rounded-xl p-4 md:p-5">
+          <div className="mb-4">
+            <h2 className="text-base font-semibold text-nis-primary">
+              My Incident Reports
+            </h2>
+            <p className="text-xs text-gray-400 mt-0.5">
+              Reports you have submitted and their current status
+            </p>
+          </div>
+          <MyIncidentReportList
+            officerId={s.authUid}
+            refreshKey={incidentRefreshKey}
+          />
+        </section>
 
         <section className="bg-white border border-gray-200 rounded-xl p-4 md:p-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -155,6 +195,27 @@ export default function StaffPage() {
           </div>
         </details>
       </main>
+
+      {showIncidentForm && (
+        <IncidentReportForm
+          officerId={s.authUid}
+          profile={{
+            surname: s.surname,
+            firstName: s.firstName,
+            middleName: s.middleName,
+            serviceNumber: s.serviceNumber,
+            rank: s.rank,
+            email: s.email,
+            zone: s.zone,
+            formation: s.formation,
+          }}
+          onClose={() => setShowIncidentForm(false)}
+          onSuccess={() => {
+            setShowIncidentForm(false);
+            setIncidentRefreshKey((k) => k + 1);
+          }}
+        />
+      )}
 
       {showForm && (
         <LeaveApplicationForm

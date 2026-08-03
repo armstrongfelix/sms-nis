@@ -23,6 +23,7 @@ import DeploymentPage from "../pages/ServiceHeadPages/DeploymentPage";
 import ServiceHeadLeaveApplications from "../pages/ServiceHeadPages/ServiceHeadLeaveApplications";
 import ZonalLeaveApplications from "../pages/ZonalHeadPages/ZonalLeaveApplications";
 import FormationLeaveApplications from "../pages/FormationHeadPage/FormationLeaveApplications";
+import IncidentPage from "../pages/IncidentPage/IncidentPage";
 
 const router = createBrowserRouter([
   {
@@ -64,6 +65,7 @@ const router = createBrowserRouter([
           { path: "analytics", element: <StaffStrengthDashboard /> },
           { path: "deployment", element: <DeploymentPage /> },
           { path: "leave", element: <ServiceHeadLeaveApplications /> },
+          { path: "incidents", element: <IncidentPage /> },
         ],
       },
     ],
