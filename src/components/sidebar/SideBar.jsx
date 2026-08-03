@@ -8,54 +8,109 @@ import {
   FiSun, FiMoon, FiMonitor, FiCalendar, FiAlertTriangle,
 } from "react-icons/fi";
 
-function getNavLinks(adminData) {
+function getNavSections(adminData) {
   if (!adminData) return [];
 
   const { zone, formation } = adminData;
-  const links = [];
+  const sections = [];
 
-  links.push({ to: "/dashboard", label: "Dashboard", icon: FiGrid });
+  const overview = [
+    { to: "/dashboard", label: "Dashboard", icon: FiGrid },
+  ];
 
   if (zone === "SHQ" && formation === "SHQ") {
-    links.push(
-      { to: "/dashboard/analytics", label: "Analytics", icon: FiBarChart2 },
-      { to: "/dashboard/all-staff", label: "All Staff", icon: FiUsers },
-      { to: "/dashboard/all-admins", label: "All Admins", icon: FiShield },
-      { to: "/dashboard/register-staff", label: "Register Staff", icon: FiUserPlus },
-      { to: "/dashboard/register-admin", label: "Register Admin", icon: FiUserCheck },
-      { to: "/dashboard/deployment", label: "Deployment", icon: FiSend },
-      { to: "/dashboard/leave", label: "Leave Applications", icon: FiCalendar },
-      { to: "/dashboard/incidents", label: "Incident Reports", icon: FiAlertTriangle },
+    sections.push(
+      {
+        label: "Overview",
+        links: [
+          ...overview,
+          { to: "/dashboard/analytics", label: "Analytics", icon: FiBarChart2 },
+        ],
+      },
+      {
+        label: "Staff Management",
+        links: [
+          { to: "/dashboard/all-staff", label: "All Staff", icon: FiUsers },
+          { to: "/dashboard/register-staff", label: "Register Staff", icon: FiUserPlus },
+        ],
+      },
+      {
+        label: "Administration",
+        links: [
+          { to: "/dashboard/all-admins", label: "All Admins", icon: FiShield },
+          { to: "/dashboard/register-admin", label: "Register Admin", icon: FiUserCheck },
+        ],
+      },
+      {
+        label: "Operations",
+        links: [
+          { to: "/dashboard/deployment", label: "Deployment", icon: FiSend },
+          { to: "/dashboard/leave", label: "Leave Applications", icon: FiCalendar },
+          { to: "/dashboard/incidents", label: "Incident Reports", icon: FiAlertTriangle },
+        ],
+      }
     );
   }
 
   if (zone && zone !== "SHQ" && zone === formation) {
-    links.push(
-      { to: "/dashboard/zonal-analytics", label: "Analytics", icon: FiBarChart2 },
-      { to: "/dashboard/zonal-staff", label: `${zone} Staff`, icon: FiMapPin },
-      { to: "/dashboard/zonal-deployment", label: "Deployment", icon: FiSend },
-      { to: "/dashboard/zonal-leave", label: "Leave Applications", icon: FiCalendar },
-      { to: "/dashboard/incidents", label: "Incident Reports", icon: FiAlertTriangle },
+    sections.push(
+      {
+        label: "Overview",
+        links: [
+          ...overview,
+          { to: "/dashboard/zonal-analytics", label: "Analytics", icon: FiBarChart2 },
+        ],
+      },
+      {
+        label: "Staff Management",
+        links: [
+          { to: "/dashboard/zonal-staff", label: `${zone} Staff`, icon: FiMapPin },
+        ],
+      },
+      {
+        label: "Operations",
+        links: [
+          { to: "/dashboard/zonal-deployment", label: "Deployment", icon: FiSend },
+          { to: "/dashboard/zonal-leave", label: "Leave Applications", icon: FiCalendar },
+          { to: "/dashboard/incidents", label: "Incident Reports", icon: FiAlertTriangle },
+        ],
+      }
     );
   }
 
   if (formation && formation !== "SHQ" && formation !== zone) {
-    links.push(
-      { to: "/dashboard/formation-analytics", label: "Analytics", icon: FiBarChart2 },
-      { to: "/dashboard/formation-staff", label: `${formation} Staff`, icon: FiBriefcase },
-      { to: "/dashboard/formation-leave", label: "Leave Applications", icon: FiCalendar },
-      { to: "/dashboard/incidents", label: "Incident Reports", icon: FiAlertTriangle },
+    sections.push(
+      {
+        label: "Overview",
+        links: [
+          ...overview,
+          { to: "/dashboard/formation-analytics", label: "Analytics", icon: FiBarChart2 },
+        ],
+      },
+      {
+        label: "Staff Management",
+        links: [
+          { to: "/dashboard/formation-staff", label: `${formation} Staff`, icon: FiBriefcase },
+        ],
+      },
+      {
+        label: "Operations",
+        links: [
+          { to: "/dashboard/formation-leave", label: "Leave Applications", icon: FiCalendar },
+          { to: "/dashboard/incidents", label: "Incident Reports", icon: FiAlertTriangle },
+        ],
+      }
     );
   }
 
-  return links;
+  return sections;
 }
 
 export default function SideBar() {
   const { adminData, logout } = useAuth();
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const navLinks = getNavLinks(adminData);
+  const navSections = getNavSections(adminData);
 
   const themeOptions = [
     { value: "light", label: "Light", icon: FiSun },
@@ -81,25 +136,34 @@ export default function SideBar() {
         </div>
       </div>
 
-      <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-        {navLinks.map((link) => (
-          <NavLink
-            key={link.to}
-            to={link.to}
-            end={link.to === "/dashboard"}
-            onClick={() => setMobileOpen(false)}
-            className={({ isActive }) =>
-              [
-                "flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-colors",
-                isActive
-                  ? "bg-nis-primary/10 dark:bg-nis-primary/20 text-nis-primary font-semibold"
-                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800",
-              ].join(" ")
-            }
-          >
-            <link.icon size={18} />
-            {link.label}
-          </NavLink>
+      <nav className="flex-1 p-3 overflow-y-auto space-y-4">
+        {navSections.map((section) => (
+          <div key={section.label}>
+            <p className="px-4 py-1 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+              {section.label}
+            </p>
+            <div className="space-y-1">
+              {section.links.map((link) => (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  end={link.to === "/dashboard"}
+                  onClick={() => setMobileOpen(false)}
+                  className={({ isActive }) =>
+                    [
+                      "flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-colors",
+                      isActive
+                        ? "bg-nis-primary/10 dark:bg-nis-primary/20 text-nis-primary font-semibold"
+                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800",
+                    ].join(" ")
+                  }
+                >
+                  <link.icon size={18} />
+                  {link.label}
+                </NavLink>
+              ))}
+            </div>
+          </div>
         ))}
       </nav>
 
