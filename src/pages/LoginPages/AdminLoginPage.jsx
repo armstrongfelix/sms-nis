@@ -7,6 +7,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import useAdminDataStore from "../../stores/admin-data/adminDataStore";
 import Button from "../../components/buttons/Button";
 import { FiMail, FiLock, FiArrowLeft, FiAlertCircle } from "react-icons/fi";
+import nisLogo from "../../assets/images/nis-logo.png";
 
 function validate(values) {
   const errors = {};
@@ -109,7 +110,7 @@ export default function AdminLoginPage() {
         </button>
 
         <div className="w-25 h-25 bg-nis-secondary/5 rounded-full flex items-center justify-center mx-auto p-2 ">
-          <img src="src/assets/images/nis-logo.png" alt="nis-logo" />
+          <img src={nisLogo} alt="nis-logo" />
         </div>
 
         <div className="text-center space-y-2 mb-8  pt-10">

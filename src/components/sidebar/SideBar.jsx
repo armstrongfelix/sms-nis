@@ -7,6 +7,7 @@ import {
   FiMapPin, FiBriefcase, FiBarChart2, FiLogOut, FiMenu, FiX, FiSend,
   FiSun, FiMoon, FiMonitor, FiCalendar, FiAlertTriangle,
 } from "react-icons/fi";
+import nisLogo from "../../assets/images/nis-logo.png";
 
 function getNavSections(adminData) {
   if (!adminData) return [];
@@ -123,7 +124,7 @@ export default function SideBar() {
       <div className="p-5 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-nis-secondary/10 dark:bg-nis-secondary/20 flex items-center justify-center overflow-hidden">
-            <img src="/src/assets/images/nis-logo.png" alt="NIS" className="w-8 h-8 object-contain" />
+            <img src={nisLogo} alt="NIS" className="w-8 h-8 object-contain" />
           </div>
           <div className="min-w-0">
             <p className="text-sm font-bold text-nis-primary truncate">

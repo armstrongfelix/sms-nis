@@ -5,6 +5,7 @@ import Button from "../../components/buttons/Button";
 import {
   FiHash, FiLock, FiAlertCircle, FiArrowLeft,
 } from "react-icons/fi";
+import nisLogo from "../../assets/images/nis-logo.png";
 
 export default function StaffLoginPage() {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ export default function StaffLoginPage() {
         </button>
 
         <div className="w-25 h-25 bg-nis-secondary/5 rounded-full flex items-center justify-center mx-auto p-2 ">
-          <img src="src/assets/images/nis-logo.png" alt="nis-logo" />
+          <img src={nisLogo} alt="nis-logo" />
         </div>
 
         <div className="text-center space-y-2 mb-8 pt-10">

@@ -1,5 +1,6 @@
 import Button from "../components/buttons/Button";
 import { FiShield, FiUsers } from "react-icons/fi";
+import nisLogo from "../assets/images/nis-logo.png";
 
 export default function WelcomePage() {
   return (
@@ -7,7 +8,7 @@ export default function WelcomePage() {
       <div className="bg-white rounded-2xl shadow-2xl p-10 md:p-14 max-w-lg w-full text-center space-y-8">
         <div className="space-y-2 gap-4">
           <div className="w-30 h-30 bg-white rounded-full flex items-center justify-center mx-auto">
-            <img src="src/assets/images/nis-logo.png" alt="nis-logo" />
+            <img src={nisLogo} alt="nis-logo" />
           </div>
           <h1 className="text-2xl md:text-3xl font-bold text-nis-primary">
             Nigeria Immigration Service

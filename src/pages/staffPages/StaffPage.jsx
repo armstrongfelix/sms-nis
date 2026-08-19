@@ -8,6 +8,7 @@ import MyIncidentReportList from "../../components/incident/MyIncidentReportList
 import { DeploymentTimeline } from "../../components/deployment/DeploymentHistory";
 import Button from "../../components/buttons/Button";
 import { FiLogOut, FiPlus, FiAlertTriangle } from "react-icons/fi";
+import nisLogo from "../../assets/images/nis-logo.png";
 
 export default function StaffPage() {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ export default function StaffPage() {
     <div className="force-light min-h-screen bg-gray-50">
       <div className="sticky top-0 flex items-center justify-between bg-white shadow-sm border-b border-gray-200 px-14 py-2 ">
         <img
-          src="src\assets\images\nis-logo.png"
+          src={nisLogo}
           alt="nis logo "
           className="h-20 w-20"
         />
